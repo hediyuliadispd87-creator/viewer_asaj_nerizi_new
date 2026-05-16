@@ -56,6 +56,13 @@ body {
 .lab-num  { font-size: 15px; font-weight: 800; color: var(--navy); }
 .lab-sub  { font-size: 11px; color: var(--muted); font-weight: 500; }
 
+/* ─── Cache badge ────────────────────────────────── */
+.lab-btn .cache-badge {
+  font-size: 10px; font-weight: 700; color: var(--success);
+  background: var(--success-soft); border-radius: 99px;
+  padding: 2px 8px; margin-top: 2px;
+}
+
 /* ═══════════════════════════════════════ ROOM LOADING OVERLAY */
 #room-loading-overlay {
   position: fixed; inset: 0; z-index: 99998;
@@ -73,14 +80,11 @@ body {
   gap: 0;
 }
 
-/* Animasi pintu/ruangan */
 .room-door-wrap {
   position: relative;
   width: 120px; height: 160px;
   margin-bottom: 32px;
 }
-
-/* Frame pintu */
 .door-frame {
   position: absolute; inset: 0;
   border: 3px solid rgba(37,99,235,0.6);
@@ -88,8 +92,6 @@ body {
   background: transparent;
   box-shadow: 0 0 0 1px rgba(37,99,235,0.15), 0 0 30px rgba(37,99,235,0.15);
 }
-
-/* Daun pintu yang beranimasi */
 .door-leaf {
   position: absolute;
   top: 3px; left: 3px; right: 3px; bottom: 3px;
@@ -101,14 +103,11 @@ body {
   animation: doorOpenSwing 1.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
   box-shadow: inset -6px 0 20px rgba(0,0,0,0.4);
 }
-
 @keyframes doorOpenSwing {
   0%   { transform: perspective(600px) rotateY(0deg);    }
   60%  { transform: perspective(600px) rotateY(-78deg);  }
   100% { transform: perspective(600px) rotateY(-82deg);  }
 }
-
-/* Gagang pintu */
 .door-knob {
   position: absolute;
   right: 12px; top: 50%;
@@ -120,8 +119,6 @@ body {
   animation: doorOpenSwing 1.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
   transform-origin: left center;
 }
-
-/* Cahaya dari dalam pintu */
 .door-light {
   position: absolute; inset: 3px;
   border-radius: 8px 8px 2px 2px;
@@ -129,13 +126,7 @@ body {
   opacity: 0;
   animation: lightReveal 0.6s ease 1.5s forwards;
 }
-
-@keyframes lightReveal {
-  0%   { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-/* Garis grid lantai */
+@keyframes lightReveal { 0% { opacity: 0; } 100% { opacity: 1; } }
 .door-floor {
   position: absolute; bottom: -14px; left: 50%; transform: translateX(-50%);
   width: 180px; height: 20px;
@@ -158,13 +149,10 @@ body {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(37,99,235,0.2), transparent);
 }
-
 @keyframes floorReveal {
   from { opacity: 0; transform: translateX(-50%) scaleX(0.3); }
   to   { opacity: 1; transform: translateX(-50%) scaleX(1); }
 }
-
-/* Partikel cahaya */
 .door-particles {
   position: absolute; inset: -20px;
   pointer-events: none;
@@ -183,14 +171,12 @@ body {
 .door-particle:nth-child(3) { left: 50%; top: 60%; animation-delay: 0.6s; width: 2px; height: 2px; }
 .door-particle:nth-child(4) { left: 85%; top: 50%; animation-delay: 0.9s; }
 .door-particle:nth-child(5) { left: 10%; top: 70%; animation-delay: 1.2s; width: 2px; height: 2px; }
-
 @keyframes particlesReveal { from { opacity: 0; } to { opacity: 1; } }
 @keyframes particleFloat {
   0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
   50%       { transform: translateY(-12px) scale(1.3); opacity: 1; }
 }
 
-/* Teks loading ruangan */
 .room-loader-title {
   font-size: 18px; font-weight: 900; color: #fff;
   letter-spacing: -0.01em; margin-bottom: 6px; text-align: center;
@@ -208,9 +194,9 @@ body {
   opacity: 0; transform: translateY(6px);
   animation: rltextReveal 0.5s ease 1.95s forwards;
 }
+#room-loader-sub-text { transition: opacity 0.3s; }
 @keyframes rltextReveal { to { opacity: 1; transform: translateY(0); } }
 
-/* Progress dots */
 .room-loader-dots {
   display: flex; gap: 8px; justify-content: center;
   opacity: 0;
@@ -224,13 +210,11 @@ body {
 .room-dot:nth-child(1) { animation-delay: 0s; }
 .room-dot:nth-child(2) { animation-delay: 0.2s; }
 .room-dot:nth-child(3) { animation-delay: 0.4s; }
-
 @keyframes dotPulse {
   0%, 80%, 100% { background: rgba(37,99,235,0.3); transform: scale(1); }
   40%            { background: #60a5fa; transform: scale(1.4); box-shadow: 0 0 8px rgba(96,165,250,0.8); }
 }
 
-/* Progress bar tipis di bawah */
 .room-loader-bar-wrap {
   width: 200px; margin-top: 20px;
   opacity: 0; animation: rltextReveal 0.4s ease 2.2s forwards;
@@ -247,10 +231,17 @@ body {
 }
 @keyframes barFill { to { width: 100%; } }
 
-/* ═══════════════════════════════════════ MATH NOTATION */
-sup, sub {
-  font-size: 0.68em; line-height: 0; position: relative; vertical-align: baseline;
+/* ─── Cache hit indicator di overlay ─────────────── */
+.cache-hit-pill {
+  position: absolute; top: 20px; right: 20px;
+  background: rgba(22,163,74,0.2); border: 1px solid rgba(22,163,74,0.5);
+  color: #4ade80; font-size: 11px; font-weight: 700;
+  padding: 5px 12px; border-radius: 99px; letter-spacing: 0.04em;
+  opacity: 0; animation: rltextReveal 0.4s ease 0.5s forwards;
 }
+
+/* ═══════════════════════════════════════ MATH NOTATION */
+sup, sub { font-size: 0.68em; line-height: 0; position: relative; vertical-align: baseline; }
 sup { top: -0.5em; color: inherit; }
 sub { bottom: -0.25em; color: inherit; }
 .math-root { display: inline-flex; align-items: baseline; font-style: normal; }
@@ -393,6 +384,8 @@ sub { bottom: -0.25em; color: inherit; }
 .modal-btn.success { background: var(--success); color: #fff; }
 .modal-btn.ghost   { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
 .modal-btn.ghost:hover { background: var(--border); }
+.modal-btn.danger  { background: var(--danger); color: #fff; }
+.modal-btn.danger:hover { background: #b91c1c; }
 
 /* ═══════════════════════════════════════ COMMON */
 .btn-primary {
@@ -666,6 +659,21 @@ sub { bottom: -0.25em; color: inherit; }
 .btn-submit:hover:not(:disabled) { background: #15803d; }
 .btn-submit:disabled { opacity: .6; cursor: not-allowed; }
 
+/* ─── Cache management panel ─────────────────────── */
+.cache-panel {
+  margin-top: 16px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-xs); padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.cache-panel-info { font-size: 11px; color: var(--muted); font-weight: 600; }
+.cache-panel-info strong { color: var(--text); }
+.cache-clear-btn {
+  font-size: 11px; font-weight: 700; color: var(--danger); background: var(--danger-soft);
+  border: 1px solid #fca5a5; border-radius: 6px; padding: 4px 10px;
+  cursor: pointer; font-family: var(--font); transition: .15s; white-space: nowrap;
+}
+.cache-clear-btn:hover { background: var(--danger); color: #fff; }
+
 @media (max-width:600px) {
   .exam-header { padding: 14px 16px; }
   .q-card { padding: 20px 16px; }
@@ -719,7 +727,7 @@ sub { bottom: -0.25em; color: inherit; }
       <div class="door-floor"></div>
     </div>
     <div class="room-loader-title">Memasuki <span id="room-loader-label">Ruangan</span></div>
-    <div class="room-loader-sub">Menghubungi server ujian...</div>
+    <div class="room-loader-sub"><span id="room-loader-sub-text">Menghubungi server ujian...</span></div>
     <div class="room-loader-dots">
       <div class="room-dot"></div>
       <div class="room-dot"></div>
@@ -756,31 +764,36 @@ sub { bottom: -0.25em; color: inherit; }
         <p style="font-size:14px;color:var(--muted);line-height:1.6">Pilih nomor Ruangan tempat Anda mengerjakan ujian</p>
       </div>
       <div id="lab-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px">
-        <button class="lab-btn" onclick="pilihLab('1-4')">
+        <button class="lab-btn" id="lab-btn-1-4" onclick="pilihLab('1-4')">
           <span class="lab-icon">🚪</span>
           <span class="lab-num">Ruang 1 – 4</span>
           <span class="lab-sub">Ruangan 1 s/d 4</span>
         </button>
-        <button class="lab-btn" onclick="pilihLab('5-8')">
+        <button class="lab-btn" id="lab-btn-5-8" onclick="pilihLab('5-8')">
           <span class="lab-icon">🚪</span>
           <span class="lab-num">Ruang 5 – 8</span>
           <span class="lab-sub">Ruangan 5 s/d 8</span>
         </button>
-        <button class="lab-btn" onclick="pilihLab('9-12')">
+        <button class="lab-btn" id="lab-btn-9-12" onclick="pilihLab('9-12')">
           <span class="lab-icon">🚪</span>
           <span class="lab-num">Ruang 9 – 12</span>
           <span class="lab-sub">Ruangan 9 s/d 12</span>
         </button>
-        <button class="lab-btn" onclick="pilihLab('13-16')">
+        <button class="lab-btn" id="lab-btn-13-16" onclick="pilihLab('13-16')">
           <span class="lab-icon">🚪</span>
           <span class="lab-num">Ruang 13 – 16</span>
           <span class="lab-sub">Ruangan 13 s/d 16</span>
         </button>
-        <button class="lab-btn" onclick="pilihLab('17-19')" style="grid-column:1/-1">
+        <button class="lab-btn" id="lab-btn-17-19" onclick="pilihLab('17-19')" style="grid-column:1/-1">
           <span class="lab-icon">🚪</span>
           <span class="lab-num">Ruang 17 – 19</span>
           <span class="lab-sub">Ruangan 17 s/d 19</span>
         </button>
+      </div>
+      <!-- Panel manajemen cache -->
+      <div class="cache-panel" id="cache-panel" style="display:none">
+        <div class="cache-panel-info" id="cache-panel-info">Cache: —</div>
+        <button class="cache-clear-btn" onclick="clearAllCache()">🗑 Hapus Cache</button>
       </div>
       <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:16px">Hubungi pengawas jika tidak yakin dengan nomor ruangan Anda</p>
     </div>
@@ -971,7 +984,74 @@ sub { bottom: -0.25em; color: inherit; }
 
 <script type="module">
 /* ══════════════════════════════════════════════════
-   KONFIGURASI MULTI-LAB — semua lab dalam satu file
+   CACHE SYSTEM — localStorage dengan TTL & versioning
+   ══════════════════════════════════════════════════ */
+
+const CACHE_VERSION  = 'v1';
+const CACHE_TTL = {
+  cover   : 24 * 60 * 60 * 1000,      // 24 jam
+  logo    : 7  * 24 * 60 * 60 * 1000, // 7 hari
+  mapel   : 15 * 60 * 1000,           // 15 menit
+  image   : 3  * 24 * 60 * 60 * 1000, // 3 hari
+  // CATATAN: peserta TIDAK di-cache — selalu ambil dari server
+};
+
+function cacheSet(key, data, ttl) {
+  try {
+    const record = { v: CACHE_VERSION, ts: Date.now(), ttl, data };
+    localStorage.setItem('exam_cache_' + key, JSON.stringify(record));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') pruneOldImages();
+  }
+}
+
+function cacheGet(key) {
+  try {
+    const raw = localStorage.getItem('exam_cache_' + key);
+    if (!raw) return null;
+    const record = JSON.parse(raw);
+    if (record.v !== CACHE_VERSION) { localStorage.removeItem('exam_cache_' + key); return null; }
+    if (Date.now() - record.ts > record.ttl) { localStorage.removeItem('exam_cache_' + key); return null; }
+    return record.data;
+  } catch (_) { return null; }
+}
+
+function pruneOldImages() {
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('exam_cache_img_')) keys.push(k);
+  }
+  keys.sort((a, b) => {
+    try { return JSON.parse(localStorage.getItem(a)).ts - JSON.parse(localStorage.getItem(b)).ts; }
+    catch(_) { return 0; }
+  });
+  keys.slice(0, Math.ceil(keys.length / 2)).forEach(k => localStorage.removeItem(k));
+}
+
+function clearAllCacheInternal() {
+  const toRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('exam_cache_')) toRemove.push(k);
+  }
+  toRemove.forEach(k => localStorage.removeItem(k));
+}
+
+function getCacheStats() {
+  let count = 0, bytes = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('exam_cache_')) {
+      count++;
+      bytes += (localStorage.getItem(k) || '').length * 2;
+    }
+  }
+  return { count, kb: Math.round(bytes / 1024) };
+}
+
+/* ══════════════════════════════════════════════════
+   KONFIGURASI MULTI-LAB
    ══════════════════════════════════════════════════ */
 const LAB_CONFIGS = {
   '1-4': {
@@ -1041,7 +1121,6 @@ const LAB_CONFIGS = {
   }
 };
 
-/* Active config — set when user picks a lab */
 let GAS_URL = '';
 let firebaseConfig = {};
 let _selectedLab = null;
@@ -1131,21 +1210,34 @@ function dismissSplash() {
 }
 
 /* ─── Room Loading Overlay ───────────────────────── */
-function showRoomLoading(label) {
+function showRoomLoading(label, fromCache = false) {
   document.getElementById('room-loader-label').textContent = label || 'Ruangan';
-  // Reset animasi dengan re-inject elemen agar CSS animation replay
+  const subEl = document.getElementById('room-loader-sub-text');
+  subEl.textContent = fromCache ? 'Memuat dari cache lokal...' : 'Menghubungi server ujian...';
+
   const overlay = document.getElementById('room-loading-overlay');
-  // Force reflow untuk restart CSS animations
   overlay.classList.remove('show');
+
+  const oldBadge = overlay.querySelector('.cache-hit-pill');
+  if (oldBadge) oldBadge.remove();
+
   void overlay.offsetWidth;
-  // Re-clone bar fill agar animasi mulai ulang
+
   const oldFill = document.getElementById('room-loader-bar-fill');
   const newFill = oldFill.cloneNode(true);
   oldFill.parentNode.replaceChild(newFill, oldFill);
-  // Re-clone door leaf agar animasi pintu mulai ulang
+
   const doorLeaf = document.querySelector('.door-leaf');
   const doorLeafClone = doorLeaf.cloneNode(true);
   doorLeaf.parentNode.replaceChild(doorLeafClone, doorLeaf);
+
+  if (fromCache) {
+    const pill = document.createElement('div');
+    pill.className = 'cache-hit-pill';
+    pill.textContent = '⚡ Data dari cache';
+    overlay.appendChild(pill);
+  }
+
   overlay.classList.add('show');
   document.body.style.overflow = 'hidden';
 }
@@ -1159,6 +1251,8 @@ function hideRoomLoading() {
     overlay.style.opacity = '';
     overlay.style.transition = '';
     document.body.style.overflow = '';
+    const badge = overlay.querySelector('.cache-hit-pill');
+    if (badge) badge.remove();
   }, 400);
 }
 
@@ -1166,51 +1260,153 @@ function hideRoomLoading() {
 window.addEventListener('DOMContentLoaded', async () => {
   animateSplashTo(100, 700, 'Siap!', () => {
     dismissSplash();
-    showPage('hal-lab'); /* ← tampilkan halaman pilih lab */
+    showPage('hal-lab');
+    updateLabCacheBadges();
+    renderCachePanel();
   });
 });
+
+/* ─── Tampilkan badge cache di tombol lab ────────── */
+function updateLabCacheBadges() {
+  Object.keys(LAB_CONFIGS).forEach(key => {
+    const cached = cacheGet('cover_' + key);
+    const btn    = document.getElementById('lab-btn-' + key);
+    if (!btn) return;
+    const old = btn.querySelector('.cache-badge');
+    if (old) old.remove();
+    if (cached) {
+      const badge = document.createElement('span');
+      badge.className = 'cache-badge';
+      badge.textContent = '⚡ Tersimpan';
+      btn.appendChild(badge);
+    }
+  });
+}
+
+function renderCachePanel() {
+  const stats  = getCacheStats();
+  const panel  = document.getElementById('cache-panel');
+  const infoEl = document.getElementById('cache-panel-info');
+  if (stats.count > 0) {
+    panel.style.display = 'flex';
+    infoEl.innerHTML = 'Cache: <strong>' + stats.count + ' item</strong> · <strong>' + stats.kb + ' KB</strong>';
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+window.clearAllCache = function() {
+  showModal({
+    icon   : '🗑',
+    iconBg : '#fee2e2',
+    title  : 'Hapus Semua Cache?',
+    sub    : 'Data cover, logo, dan soal yang tersimpan lokal akan dihapus. Sistem akan mengunduh ulang dari server.',
+    buttons: [
+      { label: 'Batal', cls: 'ghost' },
+      { label: 'Ya, Hapus', cls: 'danger', action: () => {
+        clearAllCacheInternal();
+        updateLabCacheBadges();
+        renderCachePanel();
+        toast('info', 'Cache Dihapus', 'Semua data cache lokal telah dihapus.');
+      }},
+    ],
+  });
+};
 
 /* ─── Pilih Lab ──────────────────────────────────── */
 window.pilihLab = async function(key) {
   setActiveLab(key);
   document.querySelectorAll('.lab-btn').forEach(b => { b.disabled = true; });
 
-  const labCfg = LAB_CONFIGS[key];
-  // Tampilkan animasi loading ruangan
-  showRoomLoading(labCfg.label);
+  const labCfg     = LAB_CONFIGS[key];
+  const cacheKey   = 'cover_' + key;
+  const cachedData = cacheGet(cacheKey);
+  const fromCache  = !!cachedData;
 
-  // Tunggu minimal 2.8s agar animasi pintu selesai, lalu fetch data
-  const minDelay = new Promise(r => setTimeout(r, 2800));
+  showRoomLoading(labCfg.label, fromCache);
 
-  let fetchResult = null;
-  const fetchPromise = (async () => {
-    try {
-      const res = await gasGet('getCover');
-      coverData = res.covers ? res.covers[0] : null;
-      if (coverData && coverData['logo']) {
-        try {
-          const fid = extractDriveId(coverData['logo']);
-          if (fid) {
-            const ir = await gasGet('proxyImage', { id: fid });
-            if (ir.success) logoDataUri = ir.dataUri;
-          }
-        } catch (_) {}
+  const minDelay = new Promise(r => setTimeout(r, fromCache ? 2000 : 2800));
+
+  let fetchResult = 'ok';
+
+  if (fromCache) {
+    coverData   = cachedData.coverData;
+    logoDataUri = cachedData.logoDataUri || '';
+    refreshCoverInBackground(key);
+  } else {
+    const fetchPromise = (async () => {
+      try {
+        const res = await gasGet('getCover');
+        coverData = res.covers ? res.covers[0] : null;
+        if (coverData && coverData['logo']) {
+          try {
+            const fid = extractDriveId(coverData['logo']);
+            if (fid) {
+              const logoKey    = 'logo_' + fid;
+              const cachedLogo = cacheGet(logoKey);
+              if (cachedLogo) {
+                logoDataUri = cachedLogo;
+              } else {
+                const ir = await gasGet('proxyImage', { id: fid });
+                if (ir.success) {
+                  logoDataUri = ir.dataUri;
+                  cacheSet(logoKey, ir.dataUri, CACHE_TTL.logo);
+                }
+              }
+            }
+          } catch (_) {}
+        }
+        cacheSet(cacheKey, { coverData, logoDataUri }, CACHE_TTL.cover);
+      } catch (_) {
+        fetchResult = 'error';
       }
-      fetchResult = 'ok';
-    } catch (_) {
-      fetchResult = 'error';
-    }
-  })();
+    })();
 
-  await Promise.all([minDelay, fetchPromise]);
+    await Promise.all([minDelay, fetchPromise]);
+  }
+
+  await minDelay;
   hideRoomLoading();
 
   if (fetchResult === 'error') {
     toast('warn', 'Koneksi Bermasalah', 'Periksa jaringan Anda.');
+  } else if (fromCache) {
+    toast('info', '⚡ Data Cover dari Cache', 'Dimuat instan. Data diperbarui di latar belakang.');
   }
+
+  updateLabCacheBadges();
+  renderCachePanel();
 
   setTimeout(() => renderCover(), 450);
 };
+
+async function refreshCoverInBackground(key) {
+  try {
+    const res = await gasGet('getCover');
+    const freshCover = res.covers ? res.covers[0] : null;
+    if (!freshCover) return;
+    let freshLogo = logoDataUri;
+    if (freshCover['logo']) {
+      const fid = extractDriveId(freshCover['logo']);
+      if (fid) {
+        const logoKey    = 'logo_' + fid;
+        const cachedLogo = cacheGet(logoKey);
+        if (cachedLogo) {
+          freshLogo = cachedLogo;
+        } else {
+          const ir = await gasGet('proxyImage', { id: fid });
+          if (ir.success) {
+            freshLogo = ir.dataUri;
+            cacheSet(logoKey, ir.dataUri, CACHE_TTL.logo);
+          }
+        }
+      }
+    }
+    cacheSet('cover_' + key, { coverData: freshCover, logoDataUri: freshLogo }, CACHE_TTL.cover);
+    coverData   = freshCover;
+    logoDataUri = freshLogo;
+  } catch (_) {}
+}
 
 /* ─── GAS Helpers ────────────────────────────────── */
 async function gasGet(action, params = {}) {
@@ -1249,7 +1445,7 @@ window.goHalPeserta = function() {
   document.getElementById('no-peserta').focus();
 };
 
-/* ─── Cek Peserta ────────────────────────────────── */
+/* ─── Cek Peserta (selalu dari server, tanpa cache) ── */
 window.onNoPesertaInput = function() {
   const no       = document.getElementById('no-peserta').value.trim();
   const infoEl   = document.getElementById('info-peserta');
@@ -1262,6 +1458,7 @@ window.onNoPesertaInput = function() {
   siswaAktif = null;
   modeManual = false;
   if (!no) return;
+
   infoEl.className = 'info-row load';
   infoEl.innerHTML = '⏳ Memeriksa data peserta...';
   clearTimeout(timerCekPeserta);
@@ -1290,7 +1487,7 @@ window.onNoPesertaInput = function() {
   }, 700);
 };
 
-/* ─── Cek Kode Mapel ─────────────────────────────── */
+/* ─── Cek Kode Mapel (dengan cache) ─────────────── */
 window.cekKodeMapel = async function() {
   const kode   = document.getElementById('kode-mapel').value.trim();
   const infoEl = document.getElementById('info-mapel');
@@ -1300,6 +1497,18 @@ window.cekKodeMapel = async function() {
   boxEl.style.display = 'none';
   infoMapelData = null;
   if (!kode) return;
+
+  const mapelCacheKey = 'mapel_' + _selectedLab + '_' + kode;
+  const cachedMapel   = cacheGet(mapelCacheKey);
+  if (cachedMapel && cachedMapel.success) {
+    infoMapelData = cachedMapel;
+    infoEl.className = 'info-row ok';
+    infoEl.innerHTML = '✓ Kode ditemukan <span style="font-size:10px;color:var(--muted);font-weight:500">(cache)</span>';
+    document.getElementById('mi-nama').textContent = cachedMapel.mataPelajaran || '—';
+    boxEl.style.display = 'block';
+    return;
+  }
+
   infoEl.className = 'info-row load';
   infoEl.innerHTML = '⏳ Memeriksa kode mata pelajaran...';
   try {
@@ -1310,6 +1519,7 @@ window.cekKodeMapel = async function() {
       infoEl.innerHTML = '✓ Kode ditemukan';
       document.getElementById('mi-nama').textContent = res.mataPelajaran || '—';
       boxEl.style.display = 'block';
+      cacheSet(mapelCacheKey, res, CACHE_TTL.mapel);
     } else {
       infoEl.className = 'info-row err';
       infoEl.innerHTML = '✕ ' + (res.message || 'Kode tidak ditemukan');
@@ -1343,6 +1553,7 @@ window.mulaiUjian = async function() {
   const btn = document.getElementById('btn-mulai');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Memuat soal...';
+
   try {
     const res = await gasGet('getSoal', { kode, password });
     if (!res.success) {
@@ -1698,9 +1909,7 @@ async function kirimJawaban() {
         kelas         : dataKirim.kelas,
         sekolah       : dataKirim.sekolah  || '',
         mataPelajaran : dataKirim.mataPelajaran,
-        nilai,
-        benar,
-        total,
+        nilai, benar, total,
         waktuSubmit,
         ts            : Date.now(),
       });
@@ -1781,26 +1990,47 @@ async function kirimJawaban() {
   });
 }
 
-/* ─── Load Gambar ────────────────────────────────── */
-const imgCache = {};
+/* ─── Load Gambar (dengan cache localStorage) ──────── */
+const imgMemCache = {};
 
 function loadImagesOnCard() {
   const card = document.getElementById('q-card');
   card.querySelectorAll('img[data-src]').forEach(img => {
     const rawUrl = img.getAttribute('data-src');
     if (!rawUrl) return;
-    if (imgCache[rawUrl]) {
-      img.src = rawUrl; img.removeAttribute('data-src'); img.style.minHeight = '';
+
+    if (imgMemCache[rawUrl]) {
+      img.src = imgMemCache[rawUrl];
+      img.removeAttribute('data-src');
+      img.style.minHeight = '';
       return;
     }
+
+    const imgCacheKey = 'img_' + rawUrl;
+    const cachedImg   = cacheGet(imgCacheKey);
+    if (cachedImg) {
+      img.src = cachedImg;
+      img.removeAttribute('data-src');
+      img.style.minHeight = '';
+      imgMemCache[rawUrl] = cachedImg;
+      return;
+    }
+
     if (/^https?:\/\//i.test(rawUrl)) {
-      img.src = rawUrl; img.removeAttribute('data-src'); img.style.minHeight = '';
+      img.src = rawUrl;
+      img.removeAttribute('data-src');
+      img.style.minHeight = '';
       img.onerror = () => {
         const fid = extractDriveId(rawUrl);
         if (fid) fetchProxyImage(img, rawUrl, fid);
       };
     } else if (rawUrl.startsWith('data:')) {
-      img.src = rawUrl; img.removeAttribute('data-src'); img.style.minHeight = '';
+      img.src = rawUrl;
+      img.removeAttribute('data-src');
+      img.style.minHeight = '';
+    } else {
+      const fid = extractDriveId(rawUrl);
+      if (fid) fetchProxyImage(img, rawUrl, fid);
     }
   });
 }
@@ -1809,7 +2039,10 @@ async function fetchProxyImage(imgEl, cacheKey, fileId) {
   try {
     const res = await gasGet('proxyImage', { id: fileId });
     if (res.success) {
-      imgCache[cacheKey] = res.dataUri;
+      imgMemCache[cacheKey] = res.dataUri;
+      const imgCacheKey = 'img_' + cacheKey;
+      try { cacheSet(imgCacheKey, res.dataUri, CACHE_TTL.image); }
+      catch (_) { pruneOldImages(); }
       imgEl.src = res.dataUri;
       imgEl.removeAttribute('data-src');
       imgEl.style.minHeight = '';
