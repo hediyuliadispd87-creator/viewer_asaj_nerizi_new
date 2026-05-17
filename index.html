@@ -628,6 +628,18 @@ sub { bottom: -0.25em; color: inherit; }
 .btn-nav.next { background: var(--accent); color: #fff; border-color: var(--accent); }
 .btn-nav.next:hover:not(:disabled) { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
 .btn-nav.skip { background: var(--bg); color: var(--muted); font-size: 13px; padding: 10px 18px; }
+
+/* ═══ PULSE ANIMATION untuk tombol Selanjutnya setelah jawab ═══ */
+.btn-nav.next.highlight-pulse {
+  animation: nextBtnPulse 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes nextBtnPulse {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 0   rgba(37,99,235,0.7); }
+  40%  { transform: scale(1.07); box-shadow: 0 0 0 10px rgba(37,99,235,0); }
+  70%  { transform: scale(0.97); }
+  100% { transform: scale(1);    box-shadow: none; }
+}
+
 .submit-card {
   background: var(--surface); border-radius: var(--radius); border: 1.5px solid var(--success);
   padding: 28px; margin-bottom: 40px; display: none; opacity: 0;
@@ -989,11 +1001,10 @@ sub { bottom: -0.25em; color: inherit; }
 
 const CACHE_VERSION  = 'v1';
 const CACHE_TTL = {
-  cover   : 24 * 60 * 60 * 1000,      // 24 jam
-  logo    : 7  * 24 * 60 * 60 * 1000, // 7 hari
-  mapel   : 15 * 60 * 1000,           // 15 menit
-  image   : 3  * 24 * 60 * 60 * 1000, // 3 hari
-  // CATATAN: peserta TIDAK di-cache — selalu ambil dari server
+  cover   : 24 * 60 * 60 * 1000,
+  logo    : 7  * 24 * 60 * 60 * 1000,
+  mapel   : 15 * 60 * 1000,
+  image   : 3  * 24 * 60 * 60 * 1000,
 };
 
 function cacheSet(key, data, ttl) {
@@ -1731,6 +1742,21 @@ function pilihJawaban(val) {
   if (!readingDone) return;
   jawaban[currentIdx] = val;
   updatePalette();
+
+  // ── Scroll ke tombol navigasi dan highlight tombol Selanjutnya ──
+  setTimeout(() => {
+    const navEl = document.getElementById('nav-btns');
+    if (!navEl) return;
+    navEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const nextBtn = navEl.querySelector('.btn-nav.next');
+    if (nextBtn && !nextBtn.disabled) {
+      // Reset animasi agar bisa trigger ulang jika jawaban diubah
+      nextBtn.classList.remove('highlight-pulse');
+      void nextBtn.offsetWidth; // force reflow
+      nextBtn.classList.add('highlight-pulse');
+      setTimeout(() => nextBtn.classList.remove('highlight-pulse'), 700);
+    }
+  }, 200);
 }
 
 function renderPalette() {
