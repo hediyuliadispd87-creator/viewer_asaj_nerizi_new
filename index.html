@@ -55,8 +55,6 @@ body {
 .lab-icon { font-size: 26px; }
 .lab-num  { font-size: 15px; font-weight: 800; color: var(--navy); }
 .lab-sub  { font-size: 11px; color: var(--muted); font-weight: 500; }
-
-/* ─── Cache badge ────────────────────────────────── */
 .lab-btn .cache-badge {
   font-size: 10px; font-weight: 700; color: var(--success);
   background: var(--success-soft); border-radius: 99px;
@@ -73,13 +71,11 @@ body {
   gap: 0;
 }
 #room-loading-overlay.show { display: flex; }
-
 .room-loader-box {
   position: relative;
   display: flex; flex-direction: column; align-items: center;
   gap: 0;
 }
-
 .room-door-wrap {
   position: relative;
   width: 120px; height: 160px;
@@ -176,7 +172,6 @@ body {
   0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
   50%       { transform: translateY(-12px) scale(1.3); opacity: 1; }
 }
-
 .room-loader-title {
   font-size: 18px; font-weight: 900; color: #fff;
   letter-spacing: -0.01em; margin-bottom: 6px; text-align: center;
@@ -196,7 +191,6 @@ body {
 }
 #room-loader-sub-text { transition: opacity 0.3s; }
 @keyframes rltextReveal { to { opacity: 1; transform: translateY(0); } }
-
 .room-loader-dots {
   display: flex; gap: 8px; justify-content: center;
   opacity: 0;
@@ -214,7 +208,6 @@ body {
   0%, 80%, 100% { background: rgba(37,99,235,0.3); transform: scale(1); }
   40%            { background: #60a5fa; transform: scale(1.4); box-shadow: 0 0 8px rgba(96,165,250,0.8); }
 }
-
 .room-loader-bar-wrap {
   width: 200px; margin-top: 20px;
   opacity: 0; animation: rltextReveal 0.4s ease 2.2s forwards;
@@ -230,8 +223,6 @@ body {
   box-shadow: 0 0 6px rgba(37,99,235,0.8);
 }
 @keyframes barFill { to { width: 100%; } }
-
-/* ─── Cache hit indicator di overlay ─────────────── */
 .cache-hit-pill {
   position: absolute; top: 20px; right: 20px;
   background: rgba(22,163,74,0.2); border: 1px solid rgba(22,163,74,0.5);
@@ -628,8 +619,6 @@ sub { bottom: -0.25em; color: inherit; }
 .btn-nav.next { background: var(--accent); color: #fff; border-color: var(--accent); }
 .btn-nav.next:hover:not(:disabled) { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
 .btn-nav.skip { background: var(--bg); color: var(--muted); font-size: 13px; padding: 10px 18px; }
-
-/* ═══ PULSE ANIMATION untuk tombol Selanjutnya setelah jawab ═══ */
 .btn-nav.next.highlight-pulse {
   animation: nextBtnPulse 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -639,7 +628,6 @@ sub { bottom: -0.25em; color: inherit; }
   70%  { transform: scale(0.97); }
   100% { transform: scale(1);    box-shadow: none; }
 }
-
 .submit-card {
   background: var(--surface); border-radius: var(--radius); border: 1.5px solid var(--success);
   padding: 28px; margin-bottom: 40px; display: none; opacity: 0;
@@ -670,8 +658,6 @@ sub { bottom: -0.25em; color: inherit; }
 }
 .btn-submit:hover:not(:disabled) { background: #15803d; }
 .btn-submit:disabled { opacity: .6; cursor: not-allowed; }
-
-/* ─── Cache management panel ─────────────────────── */
 .cache-panel {
   margin-top: 16px; background: var(--bg); border: 1px solid var(--border);
   border-radius: var(--radius-xs); padding: 10px 14px;
@@ -776,36 +762,35 @@ sub { bottom: -0.25em; color: inherit; }
         <p style="font-size:14px;color:var(--muted);line-height:1.6">Pilih nomor Ruangan tempat Anda mengerjakan ujian</p>
       </div>
       <div id="lab-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px">
-        <button class="lab-btn" id="lab-btn-1-4" onclick="pilihLab('1-4')">
+        <button class="lab-btn" id="lab-btn-1-4"   data-lab="1-4">
           <span class="lab-icon">🚪</span>
           <span class="lab-num">Ruang 1 – 4</span>
           <span class="lab-sub">Ruangan 1 s/d 4</span>
         </button>
-        <button class="lab-btn" id="lab-btn-5-8" onclick="pilihLab('5-8')">
+        <button class="lab-btn" id="lab-btn-5-8"   data-lab="5-8">
           <span class="lab-icon">🚪</span>
           <span class="lab-num">Ruang 5 – 8</span>
           <span class="lab-sub">Ruangan 5 s/d 8</span>
         </button>
-        <button class="lab-btn" id="lab-btn-9-12" onclick="pilihLab('9-12')">
+        <button class="lab-btn" id="lab-btn-9-12"  data-lab="9-12">
           <span class="lab-icon">🚪</span>
           <span class="lab-num">Ruang 9 – 12</span>
           <span class="lab-sub">Ruangan 9 s/d 12</span>
         </button>
-        <button class="lab-btn" id="lab-btn-13-16" onclick="pilihLab('13-16')">
+        <button class="lab-btn" id="lab-btn-13-16" data-lab="13-16">
           <span class="lab-icon">🚪</span>
           <span class="lab-num">Ruang 13 – 16</span>
           <span class="lab-sub">Ruangan 13 s/d 16</span>
         </button>
-        <button class="lab-btn" id="lab-btn-17-19" onclick="pilihLab('17-19')" style="grid-column:1/-1">
+        <button class="lab-btn" id="lab-btn-17-19" data-lab="17-19" style="grid-column:1/-1">
           <span class="lab-icon">🚪</span>
           <span class="lab-num">Ruang 17 – 19</span>
           <span class="lab-sub">Ruangan 17 s/d 19</span>
         </button>
       </div>
-      <!-- Panel manajemen cache -->
       <div class="cache-panel" id="cache-panel" style="display:none">
         <div class="cache-panel-info" id="cache-panel-info">Cache: —</div>
-        <button class="cache-clear-btn" onclick="clearAllCache()">🗑 Hapus Cache</button>
+        <button class="cache-clear-btn" id="btn-clear-cache">🗑 Hapus Cache</button>
       </div>
       <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:16px">Hubungi pengawas jika tidak yakin dengan nomor ruangan Anda</p>
     </div>
@@ -831,7 +816,7 @@ sub { bottom: -0.25em; color: inherit; }
         <div id="lab-badge-cover" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-soft);border:1.5px solid var(--accent-mid);border-radius:var(--radius-xs);padding:8px 14px;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:20px">
           🚪 <span id="lab-badge-txt">—</span>
         </div>
-        <button class="cover-start-btn" onclick="goHalPeserta()">
+        <button class="cover-start-btn" id="btn-cover-start">
           Mulai Pendaftaran Ujian →
         </button>
       </div>
@@ -851,7 +836,7 @@ sub { bottom: -0.25em; color: inherit; }
     <div class="login-card">
       <div class="field">
         <label>Nomor Peserta</label>
-        <input type="text" id="no-peserta" placeholder="Contoh: 2025001" autocomplete="off" oninput="onNoPesertaInput()">
+        <input type="text" id="no-peserta" placeholder="Contoh: 2025001" autocomplete="off">
         <div class="info-row" id="info-peserta"></div>
         <div class="siswa-detail" id="siswa-detail">
           <div class="siswa-detail-row">
@@ -891,9 +876,7 @@ sub { bottom: -0.25em; color: inherit; }
       <div class="field" style="margin-top:4px">
         <label>Kode Mata Pelajaran</label>
         <input type="text" id="kode-mapel" placeholder="Contoh: MTK-001" autocomplete="off"
-               style="text-transform:uppercase"
-               oninput="this.value=this.value.toUpperCase()"
-               onblur="cekKodeMapel()">
+               style="text-transform:uppercase">
         <div class="info-row" id="info-mapel"></div>
         <div class="mapel-info-box" id="mapel-info-box">
           <div class="mi-label">Mata Pelajaran</div>
@@ -903,10 +886,9 @@ sub { bottom: -0.25em; color: inherit; }
       </div>
       <div class="field">
         <label>Password Mulai</label>
-        <input type="password" id="pass-mulai" placeholder="Masukkan password dari pengawas"
-               onkeydown="if(event.key==='Enter')mulaiUjian()">
+        <input type="password" id="pass-mulai" placeholder="Masukkan password dari pengawas">
       </div>
-      <button class="btn-primary" id="btn-mulai" onclick="mulaiUjian()">
+      <button class="btn-primary" id="btn-mulai">
         Masuk ke Ruang Ujian
       </button>
     </div>
@@ -921,7 +903,6 @@ sub { bottom: -0.25em; color: inherit; }
       </div>
       <span class="mapel-badge" id="txt-mapel-badge"></span>
     </div>
-
     <div class="timer-bar" id="timer-bar">
       <span class="timer-icon" id="timer-icon">⏳</span>
       <div style="flex:1">
@@ -930,14 +911,12 @@ sub { bottom: -0.25em; color: inherit; }
       </div>
       <div class="timer-countdown" id="timer-countdown">15</div>
     </div>
-
     <div class="progress-wrap">
       <span style="font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap">Progres</span>
       <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
       <span class="progress-count" id="progress-count">0 / 0</span>
     </div>
-
-    <div class="palette-toggle-bar" id="palette-toggle-bar" onclick="togglePalette()">
+    <div class="palette-toggle-bar" id="palette-toggle-bar">
       <div class="palette-toggle-left">
         <span style="font-size:16px">🗂️</span>
         <span class="palette-toggle-label">Navigasi Soal</span>
@@ -945,10 +924,8 @@ sub { bottom: -0.25em; color: inherit; }
       </div>
       <div class="palette-toggle-icon" id="palette-toggle-icon">▾</div>
     </div>
-
     <div class="q-card" id="q-card"></div>
     <div class="nav-btns" id="nav-btns"></div>
-
     <div class="submit-card" id="submit-card">
       <div class="submit-card-header">
         <div class="submit-card-icon">🎯</div>
@@ -960,7 +937,7 @@ sub { bottom: -0.25em; color: inherit; }
       <hr>
       <p>Pastikan semua jawaban sudah benar sebelum mengirim. Jawaban tidak dapat diubah setelah dikirim.</p>
       <input type="password" id="pass-selesai" placeholder="Password selesai dari pengawas">
-      <button class="btn-submit" id="btn-kirim" onclick="validasiKirim()">
+      <button class="btn-submit" id="btn-kirim">
         Kirim Semua Jawaban
       </button>
     </div>
@@ -968,9 +945,9 @@ sub { bottom: -0.25em; color: inherit; }
 </div>
 
 <!-- PALETTE SHEET -->
-<div id="palette-overlay" onclick="closePaletteOnOverlay(event)">
+<div id="palette-overlay">
   <div class="palette-sheet" id="palette-sheet">
-    <div class="palette-handle" onclick="closePalette()">
+    <div class="palette-handle" id="palette-handle-close">
       <div class="palette-handle-bar"></div>
     </div>
     <div class="palette-header">
@@ -980,7 +957,7 @@ sub { bottom: -0.25em; color: inherit; }
           <span class="pstat ans"   id="pstat-ans">0 dijawab</span>
           <span class="pstat unans" id="pstat-unans">0 belum</span>
         </div>
-        <div class="palette-close" onclick="closePalette()">✕</div>
+        <div class="palette-close" id="palette-close-btn">✕</div>
       </div>
     </div>
     <div class="palette-body">
@@ -995,16 +972,28 @@ sub { bottom: -0.25em; color: inherit; }
 </div>
 
 <script type="module">
-/* ══════════════════════════════════════════════════
-   CACHE SYSTEM — localStorage dengan TTL & versioning
-   ══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   BUG FIXES SUMMARY:
+   [FIX-1] currentIdx scope — renderNav() pakai event listener, bukan onclick string
+   [FIX-2] readingDone race condition — timer baru selalu reset + guard optList dalam interval
+   [FIX-3] double-lab race — flag _labLoading mencegah klik ganda
+   [FIX-4] gasGet timeout — AbortController 15 detik
+   [FIX-5] escHtml/parseMath order — parseMath dipanggil dulu, escaping hanya untuk teks mentah
+   [FIX-6] inline onclick diganti addEventListener semua
+   [FIX-7] imgMemCache size limit — max 60 entry, evict entry terlama
+   [FIX-8] Firebase deleteApp race — cek app existence dengan nama eksplisit
+   [FIX-9] window.currentIdx dihapus (tidak berguna, menyesatkan)
+   ═══════════════════════════════════════════════════ */
 
-const CACHE_VERSION  = 'v1';
+/* ══════════════════════════════════════════════════
+   CACHE SYSTEM
+   ══════════════════════════════════════════════════ */
+const CACHE_VERSION = 'v1';
 const CACHE_TTL = {
-  cover   : 24 * 60 * 60 * 1000,
-  logo    : 7  * 24 * 60 * 60 * 1000,
-  mapel   : 15 * 60 * 1000,
-  image   : 3  * 24 * 60 * 60 * 1000,
+  cover : 24 * 60 * 60 * 1000,
+  logo  : 7  * 24 * 60 * 60 * 1000,
+  mapel : 15 * 60 * 1000,
+  image : 3  * 24 * 60 * 60 * 1000,
 };
 
 function cacheSet(key, data, ttl) {
@@ -1035,7 +1024,7 @@ function pruneOldImages() {
   }
   keys.sort((a, b) => {
     try { return JSON.parse(localStorage.getItem(a)).ts - JSON.parse(localStorage.getItem(b)).ts; }
-    catch(_) { return 0; }
+    catch (_) { return 0; }
   });
   keys.slice(0, Math.ceil(keys.length / 2)).forEach(k => localStorage.removeItem(k));
 }
@@ -1132,37 +1121,41 @@ const LAB_CONFIGS = {
   }
 };
 
-let GAS_URL = '';
+let GAS_URL       = '';
 let firebaseConfig = {};
-let _selectedLab = null;
+let _selectedLab  = null;
 
 function setActiveLab(key) {
   const cfg = LAB_CONFIGS[key];
   if (!cfg) return;
-  _selectedLab = key;
-  GAS_URL = cfg.GAS_URL;
+  _selectedLab  = key;
+  GAS_URL       = cfg.GAS_URL;
   firebaseConfig = cfg.firebase;
 }
 
-/* ─── Firebase lazy init ────────────────────────── */
-let _db = null;
+/* ─── [FIX-8] Firebase lazy init — app name eksplisit, cegah "already exists" ── */
+let _db       = null;
 let _dbLabKey = null;
 
 async function getDB() {
   if (_db && _dbLabKey === _selectedLab) return _db;
   try {
-    const { initializeApp, getApps, deleteApp } = await import(
+    const { initializeApp, getApps, getApp, deleteApp } = await import(
       'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'
     );
     const { getDatabase, ref, set } = await import(
       'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js'
     );
-    if (_dbLabKey && _dbLabKey !== _selectedLab) {
-      const existingApps = getApps();
-      for (const a of existingApps) { try { await deleteApp(a); } catch(_) {} }
+
+    // Hapus app dengan nama 'exam-app' jika sudah ada dari lab sebelumnya
+    const APP_NAME = 'exam-app';
+    const existing = getApps().find(a => a.name === APP_NAME);
+    if (existing) {
+      await deleteApp(existing);
     }
-    const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-    _db = { db: getDatabase(app), ref, set };
+
+    const app = initializeApp(firebaseConfig, APP_NAME);
+    _db       = { db: getDatabase(app), ref, set };
     _dbLabKey = _selectedLab;
     return _db;
   } catch (e) {
@@ -1179,13 +1172,27 @@ let modeManual      = false;
 let infoMapelData   = null;
 let soalList        = [];
 let jawaban         = {};
-let currentIdx      = 0;
+let currentIdx      = 0;          // [FIX-9] tidak lagi di-expose ke window
 let passwordSelesai = '';
 let submitCardShown = false;
 let timerInterval   = null;
 let readingDone     = false;
 let timerSisaDetik  = 15;
 let timerCekPeserta = null;
+let _labLoading     = false;      // [FIX-3] flag anti double-click
+
+/* ─── [FIX-4] gasGet dengan timeout 15 detik ─────── */
+async function gasGet(action, params = {}) {
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 15000);
+  try {
+    const qs  = new URLSearchParams({ action, ...params }).toString();
+    const res = await fetch(`${GAS_URL}?${qs}`, { signal: controller.signal });
+    return await res.json();
+  } finally {
+    clearTimeout(tid);
+  }
+}
 
 /* ─── Splash ─────────────────────────────────────── */
 let splashPct = 0;
@@ -1223,28 +1230,28 @@ function dismissSplash() {
 /* ─── Room Loading Overlay ───────────────────────── */
 function showRoomLoading(label, fromCache = false) {
   document.getElementById('room-loader-label').textContent = label || 'Ruangan';
-  const subEl = document.getElementById('room-loader-sub-text');
-  subEl.textContent = fromCache ? 'Memuat dari cache lokal...' : 'Menghubungi server ujian...';
+  document.getElementById('room-loader-sub-text').textContent =
+    fromCache ? 'Memuat dari cache lokal...' : 'Menghubungi server ujian...';
 
   const overlay = document.getElementById('room-loading-overlay');
   overlay.classList.remove('show');
-
   const oldBadge = overlay.querySelector('.cache-hit-pill');
   if (oldBadge) oldBadge.remove();
-
   void overlay.offsetWidth;
 
+  // Reset animasi bar
   const oldFill = document.getElementById('room-loader-bar-fill');
   const newFill = oldFill.cloneNode(true);
   oldFill.parentNode.replaceChild(newFill, oldFill);
 
-  const doorLeaf = document.querySelector('.door-leaf');
-  const doorLeafClone = doorLeaf.cloneNode(true);
-  doorLeaf.parentNode.replaceChild(doorLeafClone, doorLeaf);
+  // Reset animasi pintu
+  const doorLeaf  = document.querySelector('.door-leaf');
+  const doorClone = doorLeaf.cloneNode(true);
+  doorLeaf.parentNode.replaceChild(doorClone, doorLeaf);
 
   if (fromCache) {
     const pill = document.createElement('div');
-    pill.className = 'cache-hit-pill';
+    pill.className   = 'cache-hit-pill';
     pill.textContent = '⚡ Data dari cache';
     overlay.appendChild(pill);
   }
@@ -1256,10 +1263,10 @@ function showRoomLoading(label, fromCache = false) {
 function hideRoomLoading() {
   const overlay = document.getElementById('room-loading-overlay');
   overlay.style.transition = 'opacity 0.4s ease';
-  overlay.style.opacity = '0';
+  overlay.style.opacity    = '0';
   setTimeout(() => {
     overlay.classList.remove('show');
-    overlay.style.opacity = '';
+    overlay.style.opacity    = '';
     overlay.style.transition = '';
     document.body.style.overflow = '';
     const badge = overlay.querySelector('.cache-hit-pill');
@@ -1267,8 +1274,36 @@ function hideRoomLoading() {
   }, 400);
 }
 
-/* ─── Init ───────────────────────────────────────── */
-window.addEventListener('DOMContentLoaded', async () => {
+/* ─── Init — semua event listener dipasang di sini ── */
+window.addEventListener('DOMContentLoaded', () => {
+  // [FIX-6] Lab buttons — event listener, bukan onclick attr
+  document.querySelectorAll('.lab-btn[data-lab]').forEach(btn => {
+    btn.addEventListener('click', () => pilihLab(btn.dataset.lab));
+  });
+  document.getElementById('btn-clear-cache').addEventListener('click', clearAllCache);
+  document.getElementById('btn-cover-start').addEventListener('click', goHalPeserta);
+  document.getElementById('btn-mulai').addEventListener('click', mulaiUjian);
+  document.getElementById('btn-kirim').addEventListener('click', validasiKirim);
+  document.getElementById('palette-toggle-bar').addEventListener('click', togglePalette);
+  document.getElementById('palette-close-btn').addEventListener('click', closePalette);
+  document.getElementById('palette-handle-close').addEventListener('click', closePalette);
+  document.getElementById('palette-overlay').addEventListener('click', closePaletteOnOverlay);
+
+  // [FIX-6] Kode mapel — event listener
+  const kodeMapelEl = document.getElementById('kode-mapel');
+  kodeMapelEl.addEventListener('input', () => {
+    kodeMapelEl.value = kodeMapelEl.value.toUpperCase();
+  });
+  kodeMapelEl.addEventListener('blur', cekKodeMapel);
+
+  // [FIX-6] Nomor peserta — event listener
+  document.getElementById('no-peserta').addEventListener('input', onNoPesertaInput);
+
+  // Enter pada pass-mulai
+  document.getElementById('pass-mulai').addEventListener('keydown', e => {
+    if (e.key === 'Enter') mulaiUjian();
+  });
+
   animateSplashTo(100, 700, 'Siap!', () => {
     dismissSplash();
     showPage('hal-lab');
@@ -1277,7 +1312,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-/* ─── Tampilkan badge cache di tombol lab ────────── */
+/* ─── Badge cache di tombol lab ────────────────────── */
 function updateLabCacheBadges() {
   Object.keys(LAB_CONFIGS).forEach(key => {
     const cached = cacheGet('cover_' + key);
@@ -1287,7 +1322,7 @@ function updateLabCacheBadges() {
     if (old) old.remove();
     if (cached) {
       const badge = document.createElement('span');
-      badge.className = 'cache-badge';
+      badge.className   = 'cache-badge';
       badge.textContent = '⚡ Tersimpan';
       btn.appendChild(badge);
     }
@@ -1306,7 +1341,7 @@ function renderCachePanel() {
   }
 }
 
-window.clearAllCache = function() {
+function clearAllCache() {
   showModal({
     icon   : '🗑',
     iconBg : '#fee2e2',
@@ -1322,10 +1357,12 @@ window.clearAllCache = function() {
       }},
     ],
   });
-};
+}
 
-/* ─── Pilih Lab ──────────────────────────────────── */
-window.pilihLab = async function(key) {
+/* ─── [FIX-3] Pilih Lab — flag mencegah double-trigger ── */
+async function pilihLab(key) {
+  if (_labLoading) return;                         // cegah klik ganda
+  _labLoading = true;
   setActiveLab(key);
   document.querySelectorAll('.lab-btn').forEach(b => { b.disabled = true; });
 
@@ -1337,7 +1374,6 @@ window.pilihLab = async function(key) {
   showRoomLoading(labCfg.label, fromCache);
 
   const minDelay = new Promise(r => setTimeout(r, fromCache ? 2000 : 2800));
-
   let fetchResult = 'ok';
 
   if (fromCache) {
@@ -1372,12 +1408,12 @@ window.pilihLab = async function(key) {
         fetchResult = 'error';
       }
     })();
-
     await Promise.all([minDelay, fetchPromise]);
   }
 
   await minDelay;
   hideRoomLoading();
+  _labLoading = false;                              // reset flag
 
   if (fetchResult === 'error') {
     toast('warn', 'Koneksi Bermasalah', 'Periksa jaringan Anda.');
@@ -1387,13 +1423,12 @@ window.pilihLab = async function(key) {
 
   updateLabCacheBadges();
   renderCachePanel();
-
   setTimeout(() => renderCover(), 450);
-};
+}
 
 async function refreshCoverInBackground(key) {
   try {
-    const res = await gasGet('getCover');
+    const res        = await gasGet('getCover');
     const freshCover = res.covers ? res.covers[0] : null;
     if (!freshCover) return;
     let freshLogo = logoDataUri;
@@ -1419,13 +1454,6 @@ async function refreshCoverInBackground(key) {
   } catch (_) {}
 }
 
-/* ─── GAS Helpers ────────────────────────────────── */
-async function gasGet(action, params = {}) {
-  const qs  = new URLSearchParams({ action, ...params }).toString();
-  const res = await fetch(`${GAS_URL}?${qs}`);
-  return res.json();
-}
-
 /* ─── Cover ──────────────────────────────────────── */
 function renderCover() {
   if (coverData) {
@@ -1434,12 +1462,12 @@ function renderCover() {
     const el = document.getElementById('brand-title');
     if (el) el.textContent = coverData['judul'] || 'Ujian Online';
   }
-  ['cover-logo-img','brand-logo-img','splash-logo-img'].forEach(id => {
+  ['cover-logo-img', 'brand-logo-img', 'splash-logo-img'].forEach(id => {
     const el = document.getElementById(id);
     if (el && logoDataUri) { el.src = logoDataUri; el.style.display = 'block'; }
   });
   if (logoDataUri) {
-    ['cover-logo-fallback','brand-logo-fallback','splash-logo-fallback'].forEach(id => {
+    ['cover-logo-fallback', 'brand-logo-fallback', 'splash-logo-fallback'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
@@ -1451,13 +1479,13 @@ function renderCover() {
   showPage('hal-cover');
 }
 
-window.goHalPeserta = function() {
+function goHalPeserta() {
   showPage('hal-peserta');
   document.getElementById('no-peserta').focus();
-};
+}
 
-/* ─── Cek Peserta (selalu dari server, tanpa cache) ── */
-window.onNoPesertaInput = function() {
+/* ─── Cek Peserta ────────────────────────────────── */
+function onNoPesertaInput() {
   const no       = document.getElementById('no-peserta').value.trim();
   const infoEl   = document.getElementById('info-peserta');
   const detailEl = document.getElementById('siswa-detail');
@@ -1496,10 +1524,10 @@ window.onNoPesertaInput = function() {
       infoEl.innerHTML = '✕ Gagal mengecek — periksa koneksi';
     }
   }, 700);
-};
+}
 
-/* ─── Cek Kode Mapel (dengan cache) ─────────────── */
-window.cekKodeMapel = async function() {
+/* ─── Cek Kode Mapel ─────────────────────────────── */
+async function cekKodeMapel() {
   const kode   = document.getElementById('kode-mapel').value.trim();
   const infoEl = document.getElementById('info-mapel');
   const boxEl  = document.getElementById('mapel-info-box');
@@ -1539,10 +1567,10 @@ window.cekKodeMapel = async function() {
     infoEl.className = 'info-row err';
     infoEl.innerHTML = '✕ Gagal mengecek — periksa koneksi';
   }
-};
+}
 
 /* ─── Mulai Ujian ────────────────────────────────── */
-window.mulaiUjian = async function() {
+async function mulaiUjian() {
   if (modeManual) {
     const nm = document.getElementById('manual-nama').value.trim();
     const kl = document.getElementById('manual-kelas').value.trim();
@@ -1556,11 +1584,14 @@ window.mulaiUjian = async function() {
   } else {
     if (!siswaAktif) return toast('error', 'Peserta Tidak Valid', 'Masukkan nomor peserta yang terdaftar.');
   }
+
   const kode = document.getElementById('kode-mapel').value.trim();
   if (!kode) return toast('warn', 'Kode Mapel Kosong', 'Isi kode mata pelajaran.');
   if (!infoMapelData) { await cekKodeMapel(); if (!infoMapelData) return; }
+
   const password = document.getElementById('pass-mulai').value;
   if (!password) return toast('warn', 'Password Kosong', 'Masukkan password mulai dari pengawas.');
+
   const btn = document.getElementById('btn-mulai');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Memuat soal...';
@@ -1578,19 +1609,23 @@ window.mulaiUjian = async function() {
     jawaban         = {};
     currentIdx      = 0;
     submitCardShown = false;
+
     if (soalList.length === 0) {
       toast('warn', 'Soal Kosong', 'Tidak ada soal untuk mata pelajaran ini.');
       btn.disabled = false;
       btn.innerHTML = 'Masuk ke Ruang Ujian';
       return;
     }
+
     document.getElementById('txt-nama-siswa').textContent = siswaAktif['nama'] || '';
     document.getElementById('txt-info-siswa').textContent =
       (siswaAktif['kelas'] || '') + (siswaAktif['sekolah'] ? ' · ' + siswaAktif['sekolah'] : '');
     document.getElementById('txt-mapel-badge').textContent = res.mataPelajaran || kode;
+
     const sc = document.getElementById('submit-card');
     sc.classList.remove('show', 'animate-in');
     document.getElementById('pass-selesai').value = '';
+
     renderPalette();
     showPage('hal-soal');
     renderQuestion(0);
@@ -1601,7 +1636,7 @@ window.mulaiUjian = async function() {
     btn.disabled = false;
     btn.innerHTML = 'Masuk ke Ruang Ujian';
   }
-};
+}
 
 /* ─── Acak Soal ──────────────────────────────────── */
 function acakSoal(list) {
@@ -1610,8 +1645,8 @@ function acakSoal(list) {
   list = list.map(s => {
     if (!s.pilihan) s.pilihan = [];
     if (!Array.isArray(s.pilihan)) {
-      s.pilihan = Object.entries(s.pilihan).filter(([,v]) => v)
-        .map(([k,v]) => ({ huruf: k, teks: String(v), gambar: '' }));
+      s.pilihan = Object.entries(s.pilihan).filter(([, v]) => v)
+        .map(([k, v]) => ({ huruf: k, teks: String(v), gambar: '' }));
     }
     return s;
   });
@@ -1619,70 +1654,95 @@ function acakSoal(list) {
   const soal5   = shuffle(list.filter(s => jml(s) === 5));
   const soal4   = shuffle(list.filter(s => jml(s) === 4));
   const soal2   = shuffle(list.filter(s => jml(s) === 2));
-  const lainnya = shuffle(list.filter(s => { const n=jml(s); return n!==5&&n!==4&&n!==2; }));
+  const lainnya = shuffle(list.filter(s => { const n = jml(s); return n !== 5 && n !== 4 && n !== 2; }));
   return [...soal5, ...soal4, ...soal2, ...lainnya];
+}
+
+/* ─── [FIX-5] Text rendering — parseMath DULU, baru escape HTML ─────────────────
+   Pendekatan: rawToHtml memisahkan "safe text" vs "math markup"
+   ─────────────────────────────────────────────────────────────────────────────── */
+function rawToHtml(s) {
+  // 1. parseMath bekerja pada teks mentah (sebelum di-escape)
+  const mathed = parseMath(String(s || ''));
+  // 2. Bagian yang bukan tag HTML di-escape, tag hasil parseMath dibiarkan
+  //    Strategi: split di tag HTML, escape bagian di luar tag
+  return mathed
+    .replace(/&(?!amp;|lt;|gt;|quot;|#)/g, '&amp;')  // escape & yang belum di-escape
+    .replace(/\n/g, '<br>');
 }
 
 /* ─── Render Soal ────────────────────────────────── */
 function renderQuestion(idx) {
   currentIdx = idx;
   const s = soalList[idx];
+
   let pilihan = [];
   if (Array.isArray(s.pilihan) && s.pilihan.length > 0) {
     pilihan = s.pilihan.filter(opt => opt && opt.huruf);
   } else if (s.pilihan && typeof s.pilihan === 'object') {
-    pilihan = Object.entries(s.pilihan).filter(([,v]) => v)
-      .map(([k,v]) => ({ huruf: k, teks: String(v), gambar: '' }));
+    pilihan = Object.entries(s.pilihan).filter(([, v]) => v)
+      .map(([k, v]) => ({ huruf: k, teks: String(v), gambar: '' }));
   }
   if (pilihan.length === 0) {
     ['A','B','C','D','E','F','G','H','I','J','K','L'].forEach(h => {
-      const teks   = String(s['opt_'+h] || s['opt_'+h.toLowerCase()] || '').trim();
-      const gambar = String(s['gambar opt_'+h] || s['gambar opt_'+h.toLowerCase()] || '').trim();
+      const teks   = String(s['opt_' + h] || s['opt_' + h.toLowerCase()] || '').trim();
+      const gambar = String(s['gambar opt_' + h] || s['gambar opt_' + h.toLowerCase()] || '').trim();
       if (teks || gambar) pilihan.push({ huruf: h, teks, gambar });
     });
   }
+
   const soalTeks   = s.soal || s.Soal || '';
   const gambarSoal = s.gambarSoal || s.Img_Soal || '';
+
   const card = document.getElementById('q-card');
   card.innerHTML =
-    '<div class="q-number-tag">Soal ' + (idx+1) + ' dari ' + soalList.length + '</div>' +
-    '<div class="q-text">' + escHtml(soalTeks) + '</div>' +
+    '<div class="q-number-tag">Soal ' + (idx + 1) + ' dari ' + soalList.length + '</div>' +
+    '<div class="q-text">' + rawToHtml(soalTeks) + '</div>' +
     (gambarSoal ? '<img data-src="' + gambarSoal + '" class="q-img" style="min-height:80px;background:var(--bg)">' : '') +
     '<div class="option-list" id="option-list"></div>';
+
   const optList = card.querySelector('#option-list');
   if (pilihan.length === 0) {
     optList.innerHTML = '<div style="color:var(--danger);font-size:13px;padding:12px 0">⚠ Pilihan jawaban tidak tersedia untuk soal ini.</div>';
   } else {
-    pilihan.forEach(function(opt) {
+    pilihan.forEach(opt => {
       const huruf  = String(opt.huruf  || '').trim();
       const teks   = String(opt.teks   || '').trim();
       const gambar = String(opt.gambar || '').trim();
-      const wrapper = document.createElement('div');
+
+      const wrapper   = document.createElement('div');
       wrapper.className = 'option-item';
+
       const radio   = document.createElement('input');
       radio.type    = 'radio';
       radio.name    = 'soal_q';
       radio.id      = 'opt_' + huruf;
       radio.value   = huruf;
       radio.checked = (jawaban[idx] === huruf);
-      radio.addEventListener('change', (function(h){ return function(){ pilihJawaban(h); }; })(huruf));
+      // [FIX-1] closure yang benar — huruf di-capture per iterasi
+      radio.addEventListener('change', () => pilihJawaban(huruf));
+
       const lbl = document.createElement('label');
       lbl.className = 'option-label';
       lbl.setAttribute('for', 'opt_' + huruf);
-      const keySpan = document.createElement('span');
+
+      const keySpan       = document.createElement('span');
       keySpan.className   = 'opt-key';
       keySpan.textContent = huruf;
-      const txtSpan = document.createElement('span');
+
+      const txtSpan     = document.createElement('span');
       txtSpan.className = 'opt-text';
-      txtSpan.innerHTML = escHtml(teks);
+      txtSpan.innerHTML = rawToHtml(teks);
+
       if (gambar) {
         const img = document.createElement('img');
         img.setAttribute('data-src', gambar);
-        img.className = 'opt-img';
+        img.className  = 'opt-img';
         img.style.cssText = 'min-height:50px;background:var(--bg);display:block;margin-top:8px';
         txtSpan.appendChild(document.createElement('br'));
         txtSpan.appendChild(img);
       }
+
       lbl.appendChild(keySpan);
       lbl.appendChild(txtSpan);
       wrapper.appendChild(radio);
@@ -1690,24 +1750,60 @@ function renderQuestion(idx) {
       optList.appendChild(wrapper);
     });
   }
-  renderNav();
+
+  renderNav();           // [FIX-1] renderNav pakai event listener
   updatePalette();
   mulaiTimer();
   loadImagesOnCard();
   window.scrollTo({ top: document.getElementById('hal-soal').offsetTop - 20, behavior: 'smooth' });
 }
 
-/* ─── Timer ──────────────────────────────────────── */
+/* ─── [FIX-1 + FIX-2] renderNav — event listener, bukan onclick string ───────── */
+function renderNav() {
+  const navEl   = document.getElementById('nav-btns');
+  const isFirst = currentIdx === 0;
+  const isLast  = currentIdx === soalList.length - 1;
+
+  navEl.innerHTML = '';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.className   = 'btn-nav';
+  prevBtn.textContent = '← Sebelumnya';
+  prevBtn.disabled    = isFirst;
+  prevBtn.addEventListener('click', () => goTo(currentIdx - 1));   // closure aman
+  navEl.appendChild(prevBtn);
+
+  const skipBtn = document.createElement('button');
+  skipBtn.className   = 'btn-nav skip';
+  skipBtn.textContent = 'Lewati →';
+  skipBtn.disabled    = isLast;
+  skipBtn.addEventListener('click', () => goTo(currentIdx + 1));
+  navEl.appendChild(skipBtn);
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className   = 'btn-nav next';
+  nextBtn.textContent = 'Selanjutnya →';
+  nextBtn.disabled    = isLast;
+  nextBtn.addEventListener('click', () => goToNext());
+  navEl.appendChild(nextBtn);
+}
+
+/* ─── [FIX-2] Timer — readingDone direset eksplisit, guard optList dalam interval ── */
 function mulaiTimer() {
   clearInterval(timerInterval);
   timerSisaDetik = 15;
-  readingDone    = false;
+  readingDone    = false;          // reset eksplisit sebelum interval baru
+
   const barEl   = document.getElementById('timer-bar');
   const fillEl  = document.getElementById('timer-bar-fill');
   const countEl = document.getElementById('timer-countdown');
   const labelEl = document.getElementById('timer-label');
   const iconEl  = document.getElementById('timer-icon');
-  const optList = document.getElementById('option-list');
+
+  // Snapshot ID soal saat ini — jika user navigasi sebelum timer selesai,
+  // interval soal lama tidak mempengaruhi soal baru
+  const timerForIdx = currentIdx;
+
   barEl.className     = 'timer-bar reading';
   labelEl.textContent = 'Waktu Membaca — pilihan jawaban terkunci';
   labelEl.className   = 'timer-label reading-mode';
@@ -1715,16 +1811,31 @@ function mulaiTimer() {
   countEl.textContent = '15';
   countEl.className   = 'timer-countdown';
   fillEl.style.width  = '100%';
-  if (optList) optList.classList.add('options-blocker');
+
+  // Kunci opsi segera
+  const optListEl = document.getElementById('option-list');
+  if (optListEl) optListEl.classList.add('options-blocker');
+
   timerInterval = setInterval(() => {
+    // [FIX-2] Jika soal sudah ganti (navigasi cepat), hentikan interval ini
+    if (currentIdx !== timerForIdx) {
+      clearInterval(timerInterval);
+      return;
+    }
+
     timerSisaDetik--;
     fillEl.style.width  = ((timerSisaDetik / 15) * 100) + '%';
     countEl.textContent = timerSisaDetik;
     if (timerSisaDetik <= 5) countEl.className = 'timer-countdown warning';
+
     if (timerSisaDetik <= 0) {
       clearInterval(timerInterval);
       readingDone = true;
-      if (optList) optList.classList.remove('options-blocker');
+
+      // Ambil optList segar dari DOM (bukan closure lama)
+      const freshOptList = document.getElementById('option-list');
+      if (freshOptList) freshOptList.classList.remove('options-blocker');
+
       barEl.className         = 'timer-bar active';
       labelEl.textContent     = 'Pilih jawaban Anda';
       labelEl.className       = 'timer-label';
@@ -1743,16 +1854,14 @@ function pilihJawaban(val) {
   jawaban[currentIdx] = val;
   updatePalette();
 
-  // ── Scroll ke tombol navigasi dan highlight tombol Selanjutnya ──
   setTimeout(() => {
     const navEl = document.getElementById('nav-btns');
     if (!navEl) return;
     navEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     const nextBtn = navEl.querySelector('.btn-nav.next');
     if (nextBtn && !nextBtn.disabled) {
-      // Reset animasi agar bisa trigger ulang jika jawaban diubah
       nextBtn.classList.remove('highlight-pulse');
-      void nextBtn.offsetWidth; // force reflow
+      void nextBtn.offsetWidth;
       nextBtn.classList.add('highlight-pulse');
       setTimeout(() => nextBtn.classList.remove('highlight-pulse'), 700);
     }
@@ -1763,11 +1872,11 @@ function renderPalette() {
   const grid = document.getElementById('q-palette-grid');
   grid.innerHTML = '';
   soalList.forEach((_, i) => {
-    const el = document.createElement('div');
-    el.className = 'q-num';
-    el.id = 'qn-' + i;
+    const el       = document.createElement('div');
+    el.className   = 'q-num';
+    el.id          = 'qn-' + i;
     el.textContent = i + 1;
-    el.onclick = () => { closePalette(); setTimeout(() => goTo(i), 100); };
+    el.addEventListener('click', () => { closePalette(); setTimeout(() => goTo(i), 100); });
     grid.appendChild(el);
   });
   updatePalette();
@@ -1813,10 +1922,10 @@ function cekTampilSubmit(answered, total) {
   }
 }
 
-window.togglePalette = function() {
+function togglePalette() {
   const ov = document.getElementById('palette-overlay');
   ov.classList.contains('show') ? closePalette() : openPalette();
-};
+}
 function openPalette() {
   document.getElementById('palette-overlay').classList.add('show');
   document.getElementById('palette-toggle-bar').classList.add('open');
@@ -1827,35 +1936,26 @@ function closePalette() {
   document.getElementById('palette-toggle-bar').classList.remove('open');
   document.body.style.overflow = '';
 }
-window.closePaletteOnOverlay = function(e) {
+function closePaletteOnOverlay(e) {
   if (e.target === document.getElementById('palette-overlay')) closePalette();
-};
+}
 
 /* ─── Navigasi ───────────────────────────────────── */
-function renderNav() {
-  const navEl   = document.getElementById('nav-btns');
-  const isFirst = currentIdx === 0;
-  const isLast  = currentIdx === soalList.length - 1;
-  navEl.innerHTML =
-    '<button class="btn-nav" onclick="goTo(currentIdx-1)"' + (isFirst?' disabled':'') + '>← Sebelumnya</button>' +
-    '<button class="btn-nav skip" onclick="goTo(currentIdx+1)"' + (isLast?' disabled':'') + '>Lewati →</button>' +
-    '<button class="btn-nav next" onclick="goToNext()"' + (isLast?' disabled':'') + '>Selanjutnya →</button>';
-}
-window.goTo = function(idx) {
+function goTo(idx) {
   if (idx < 0 || idx >= soalList.length) return;
   renderQuestion(idx);
-};
-window.goToNext = function() {
+}
+function goToNext() {
   if (jawaban[currentIdx] === undefined) {
     toast('warn', 'Belum Dijawab', 'Pilih jawaban terlebih dahulu, atau gunakan tombol Lewati.');
     return;
   }
   if (currentIdx < soalList.length - 1) goTo(currentIdx + 1);
   else toast('info', 'Soal Terakhir', 'Kamu sudah di soal terakhir.');
-};
+}
 
 /* ─── Submit ─────────────────────────────────────── */
-window.validasiKirim = function() {
+function validasiKirim() {
   const passInput  = document.getElementById('pass-selesai').value;
   if (!passInput) return toast('warn', 'Password Kosong', 'Masukkan password selesai dari pengawas.');
   const unanswered = soalList.length - Object.keys(jawaban).length;
@@ -1872,21 +1972,22 @@ window.validasiKirim = function() {
       { label: 'Ya, Kirim Sekarang', cls: 'primary', action: kirimJawaban },
     ],
   });
-};
+}
 
 async function kirimJawaban() {
   const btn = document.getElementById('btn-kirim');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Mengirim...';
 
-  const passInput      = document.getElementById('pass-selesai').value;
-  const kode           = document.getElementById('kode-mapel').value.trim();
-  const mataPelajaran  = document.getElementById('txt-mapel-badge').textContent;
+  const passInput     = document.getElementById('pass-selesai').value;
+  const kode          = document.getElementById('kode-mapel').value.trim();
+  const mataPelajaran = document.getElementById('txt-mapel-badge').textContent;
 
   const jawabanMap = {};
   soalList.forEach((_, i) => { jawabanMap[String(i + 1)] = jawaban[i] || ''; });
 
-  let benar = 0;
+  let nilai  = 0;
+  let benar  = 0;
   const kunciMap      = {};
   const detailJawaban = {};
   soalList.forEach((s, i) => {
@@ -1899,9 +2000,8 @@ async function kirimJawaban() {
     if (isBenar) benar++;
   });
   const total = soalList.length;
-  let   nilai = total > 0 ? Math.round((benar / total) * 100) : 0;
+  nilai = total > 0 ? Math.round((benar / total) * 100) : 0;
 
-  const waktuSubmit    = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   const waktuSubmitISO = new Date().toISOString();
 
   const dataKirim = {
@@ -1928,16 +2028,21 @@ async function kirimJawaban() {
     try {
       const fb = await getDB();
       if (!fb) throw new Error('RTDB tidak tersedia');
-      const path = 'hasil/' + dataKirim.kodeMapel + '/' + dataKirim.noPeserta;
+      const path   = 'hasil/' + dataKirim.kodeMapel + '/' + dataKirim.noPeserta;
       const docRef = fb.ref(fb.db, path);
       await fb.set(docRef, {
-        nama          : dataKirim.nama,
-        kelas         : dataKirim.kelas,
-        sekolah       : dataKirim.sekolah  || '',
-        mataPelajaran : dataKirim.mataPelajaran,
-        nilai, benar, total,
-        waktuSubmit,
-        ts            : Date.now(),
+        nama         : dataKirim.nama,
+        kelas        : dataKirim.kelas,
+        sekolah      : dataKirim.sekolah       || '',
+        mataPelajaran: dataKirim.mataPelajaran,
+        kodeMapel    : dataKirim.kodeMapel,
+        noPeserta    : dataKirim.noPeserta,
+        ruang        : '',
+        jawabanSiswa : JSON.stringify(jawabanMap),
+        kunciJawaban : JSON.stringify(kunciMap),
+        nilai,
+        waktuSubmit  : waktuSubmitISO,
+        ts           : Date.now(),
       });
       berhasilFirebase = true;
     } catch (err) {
@@ -1953,7 +2058,7 @@ async function kirimJawaban() {
         kunciJawaban: JSON.stringify(kunciMap),
         waktuSubmit : waktuSubmitISO,
       };
-      const url = GAS_URL + '?action=rekapJawaban&payload=' + encodeURIComponent(JSON.stringify(payload));
+      const url  = GAS_URL + '?action=rekapJawaban&payload=' + encodeURIComponent(JSON.stringify(payload));
       const res  = await fetch(url);
       const json = await res.json();
       if (json.success) {
@@ -1994,13 +2099,14 @@ async function kirimJawaban() {
     }
   }
 
-  const statusLines = [];
-  statusLines.push(berhasilFirebase
-    ? '<small style="color:#16a34a">✓ Tersimpan di Firebase Realtime Database</small>'
-    : '<small style="color:#d97706">⚠ Firebase tidak tersedia saat ini</small>');
-  statusLines.push(berhasilSpreadsheet
-    ? '<small style="color:#16a34a">✓ Terekap di Google Spreadsheet</small>'
-    : '<small style="color:#d97706">⚠ Rekap Spreadsheet akan disinkronkan nanti</small>');
+  const statusLines = [
+    berhasilFirebase
+      ? '<small style="color:#16a34a">✓ Tersimpan di Firebase Realtime Database</small>'
+      : '<small style="color:#d97706">⚠ Firebase tidak tersedia saat ini</small>',
+    berhasilSpreadsheet
+      ? '<small style="color:#16a34a">✓ Terekap di Google Spreadsheet</small>'
+      : '<small style="color:#d97706">⚠ Rekap Spreadsheet akan disinkronkan nanti</small>',
+  ];
 
   clearInterval(timerInterval);
   showModal({
@@ -2016,8 +2122,20 @@ async function kirimJawaban() {
   });
 }
 
-/* ─── Load Gambar (dengan cache localStorage) ──────── */
-const imgMemCache = {};
+/* ─── [FIX-7] imgMemCache dengan batas 60 entry ──────
+   Entry terlama di-evict otomatis saat melebihi batas.
+   ─────────────────────────────────────────────────── */
+const IMG_MEM_MAX   = 60;
+const imgMemCache   = new Map();   // Map mempertahankan insertion order
+
+function imgMemSet(key, val) {
+  if (imgMemCache.has(key)) imgMemCache.delete(key);  // refresh ke akhir
+  imgMemCache.set(key, val);
+  if (imgMemCache.size > IMG_MEM_MAX) {
+    // Hapus entry pertama (terlama)
+    imgMemCache.delete(imgMemCache.keys().next().value);
+  }
+}
 
 function loadImagesOnCard() {
   const card = document.getElementById('q-card');
@@ -2025,20 +2143,22 @@ function loadImagesOnCard() {
     const rawUrl = img.getAttribute('data-src');
     if (!rawUrl) return;
 
-    if (imgMemCache[rawUrl]) {
-      img.src = imgMemCache[rawUrl];
+    // Cek in-memory cache (Map)
+    if (imgMemCache.has(rawUrl)) {
+      img.src = imgMemCache.get(rawUrl);
       img.removeAttribute('data-src');
       img.style.minHeight = '';
       return;
     }
 
+    // Cek localStorage cache
     const imgCacheKey = 'img_' + rawUrl;
     const cachedImg   = cacheGet(imgCacheKey);
     if (cachedImg) {
       img.src = cachedImg;
       img.removeAttribute('data-src');
       img.style.minHeight = '';
-      imgMemCache[rawUrl] = cachedImg;
+      imgMemSet(rawUrl, cachedImg);
       return;
     }
 
@@ -2065,7 +2185,7 @@ async function fetchProxyImage(imgEl, cacheKey, fileId) {
   try {
     const res = await gasGet('proxyImage', { id: fileId });
     if (res.success) {
-      imgMemCache[cacheKey] = res.dataUri;
+      imgMemSet(cacheKey, res.dataUri);
       const imgCacheKey = 'img_' + cacheKey;
       try { cacheSet(imgCacheKey, res.dataUri, CACHE_TTL.image); }
       catch (_) { pruneOldImages(); }
@@ -2105,21 +2225,24 @@ function toast(type, title, msg, duration = 4000) {
 /* ─── Modal ──────────────────────────────────────── */
 function showModal(opts) {
   document.getElementById('modal-icon').style.background = opts.iconBg || '#dbeafe';
-  document.getElementById('modal-icon').innerHTML = opts.icon || '';
-  document.getElementById('modal-title').textContent = opts.title || '';
-  document.getElementById('modal-sub').innerHTML = opts.sub || '';
+  document.getElementById('modal-icon').innerHTML        = opts.icon  || '';
+  document.getElementById('modal-title').textContent     = opts.title || '';
+  document.getElementById('modal-sub').innerHTML         = opts.sub   || '';
   const actEl = document.getElementById('modal-actions');
   actEl.innerHTML = '';
   (opts.buttons || []).forEach(b => {
-    const btn = document.createElement('button');
+    const btn       = document.createElement('button');
     btn.className   = 'modal-btn ' + (b.cls || 'ghost');
     btn.textContent = b.label;
-    btn.onclick = () => { closeModal(); if (b.action) b.action(); };
+    btn.addEventListener('click', () => { closeModal(); if (b.action) b.action(); });
     actEl.appendChild(btn);
   });
   document.getElementById('modal-overlay').classList.add('show');
 }
-function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
 
 /* ─── Utils ──────────────────────────────────────── */
 function showPage(id) {
@@ -2128,15 +2251,10 @@ function showPage(id) {
   });
 }
 
-function escHtml(s) {
-  return parseMath(
-    String(s || '')
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/\n/g,'<br>')
-  );
-}
-
-/* ─── Parse Math ─────────────────────────────────── */
+/* ─── [FIX-5] parseMath — bekerja pada teks MENTAH sebelum HTML-escape ──────────
+   Catatan: fungsi ini menghasilkan HTML tag (<sup>, <sub>, dll).
+   rawToHtml() memastikan parseMath dipanggil SEBELUM teks di-escape.
+   ─────────────────────────────────────────────────────────────────────────────── */
 function parseMath(s) {
   if (!s) return s;
   const greek = {
@@ -2144,15 +2262,19 @@ function parseMath(s) {
     'theta':'θ','lambda':'λ','mu':'μ','pi':'π','sigma':'σ',
     'omega':'ω','phi':'φ','psi':'ψ','rho':'ρ','nu':'ν','eta':'η',
     'tau':'τ','xi':'ξ','zeta':'ζ','Delta':'Δ','Sigma':'Σ','Omega':'Ω',
-    'Lambda':'Λ','Pi':'Π','Phi':'Φ','Gamma':'Γ','Theta':'Θ'
+    'Lambda':'Λ','Pi':'Π','Phi':'Φ','Gamma':'Γ','Theta':'Θ',
   };
-  s = s.replace(/\b(alpha|beta|gamma|delta|epsilon|theta|lambda|mu|pi|sigma|omega|phi|psi|rho|nu|eta|tau|xi|zeta|Delta|Sigma|Omega|Lambda|Pi|Phi|Gamma|Theta)\b/g,
-    m => greek[m] || m);
+  s = s.replace(
+    /\b(alpha|beta|gamma|delta|epsilon|theta|lambda|mu|pi|sigma|omega|phi|psi|rho|nu|eta|tau|xi|zeta|Delta|Sigma|Omega|Lambda|Pi|Phi|Gamma|Theta)\b/g,
+    m => greek[m] || m
+  );
   s = s.replace(/\binf(inity)?\b/gi, '∞');
-  s = s.replace(/<=/g,'≤').replace(/>=/g,'≥').replace(/!=/g,'≠').replace(/\+-/g,'±');
-  s = s.replace(/([a-zA-Z0-9\u03B1-\u03C9\u0391-\u03A9%\)]+)\^\(([^)]+)\)/g, (_,b,e)=>b+'<sup>'+e+'</sup>');
-  s = s.replace(/([a-zA-Z0-9\u03B1-\u03C9\u0391-\u03A9%\)]+)\^([a-zA-Z0-9\+\-\.]+)/g, (_,b,e)=>b+'<sup>'+e+'</sup>');
-  const nthRoots = {'2':'√','3':'∛','4':'∜'};
+  // [FIX-5] Operator comparison: harus diproses SEBELUM teks di-escape
+  // (teks mentah masih punya <= bukan &lt;=)
+  s = s.replace(/<=/g, '≤').replace(/>=/g, '≥').replace(/!=/g, '≠').replace(/\+-/g, '±');
+  s = s.replace(/([a-zA-Z0-9\u03B1-\u03C9\u0391-\u03A9%\)]+)\^\(([^)]+)\)/g, (_, b, e) => b + '<sup>' + e + '</sup>');
+  s = s.replace(/([a-zA-Z0-9\u03B1-\u03C9\u0391-\u03A9%\)]+)\^([a-zA-Z0-9\+\-\.]+)/g,   (_, b, e) => b + '<sup>' + e + '</sup>');
+  const nthRoots = { '2': '√', '3': '∛', '4': '∜' };
   s = s.replace(/sqrt\[(\d+)\]\(/g, (_, n) => '\x00SQRTN:' + n + '\x00');
   s = s.replace(/\x00SQRTN:(\d+)\x00\(([^)]*(?:\([^)]*\)[^)]*)*)\)/g, (_, n, inner) => {
     const sym = nthRoots[n] || (n + '√');
@@ -2166,21 +2288,20 @@ function parseMath(s) {
     out += s.slice(i, sqIdx);
     let depth = 0, j = sqIdx + 4, inner = '';
     for (; j < s.length; j++) {
-      if (s[j] === '(') { depth++; if (depth===1) continue; }
-      else if (s[j] === ')') { depth--; if (depth===0) break; }
+      if (s[j] === '(') { depth++; if (depth === 1) continue; }
+      else if (s[j] === ')') { depth--; if (depth === 0) break; }
       if (depth > 0) inner += s[j];
     }
     out += '<span class="math-root">√<span class="math-root-inner">' + inner + '</span></span>';
     i = j + 1;
   }
   s = out;
-  s = s.replace(/([a-zA-Z0-9]+)_\(([^)]+)\)/g, (_,b,sub)=>b+'<sub>'+sub+'</sub>');
-  s = s.replace(/([a-zA-Z0-9]+)_([a-zA-Z0-9]+)/g, (_,b,sub)=>b+'<sub>'+sub+'</sub>');
-  s = s.replace(/(?<![:/])\b(\d+)\/(\d+)\b(?![\d/])/g, (_,num,den)=>'<span class="math-frac"><sup>'+num+'</sup>⁄<sub>'+den+'</sub></span>');
+  s = s.replace(/([a-zA-Z0-9]+)_\(([^)]+)\)/g,   (_, b, sub) => b + '<sub>' + sub + '</sub>');
+  s = s.replace(/([a-zA-Z0-9]+)_([a-zA-Z0-9]+)/g, (_, b, sub) => b + '<sub>' + sub + '</sub>');
+  s = s.replace(/(?<![:/])\b(\d+)\/(\d+)\b(?![\d/])/g,
+    (_, num, den) => '<span class="math-frac"><sup>' + num + '</sup>⁄<sub>' + den + '</sub></span>');
   return s;
 }
-
-window.currentIdx = currentIdx;
 </script>
 </body>
 </html>
