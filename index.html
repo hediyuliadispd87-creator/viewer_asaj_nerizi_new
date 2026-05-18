@@ -81,7 +81,7 @@ body {
 }
 #autosave-badge .as-icon { font-size: 14px; }
 
-/* ═══════════════════════════════════════ SESSION RESTORE CHIP (di exam header) */
+/* ═══════════════════════════════════════ SESSION RESTORE CHIP */
 .session-restore-chip {
   display: inline-flex; align-items: center; gap: 6px;
   background: rgba(22,163,74,0.2); border: 1px solid rgba(22,163,74,0.5);
@@ -1049,7 +1049,7 @@ const CACHE_TTL = {
   logo   : 7  * 24 * 60 * 60 * 1000,
   mapel  : 15 * 60 * 1000,
   image  : 3  * 24 * 60 * 60 * 1000,
-  session: 24 * 60 * 60 * 1000,   // ← TTL sesi jawaban: 24 jam
+  session: 24 * 60 * 60 * 1000,
 };
 
 function cacheSet(key, data, ttl) {
@@ -1106,58 +1106,42 @@ function getCacheStats() {
 }
 
 /* ══════════════════════════════════════════════════
-   SESSION PERSISTENCE — simpan & pulihkan jawaban
+   SESSION PERSISTENCE
    ══════════════════════════════════════════════════ */
-
-/**
- * Buat key sesi unik per peserta + mapel + lab
- */
 function sessionKey(noPeserta, kodeMapel, labKey) {
   return 'session_' + labKey + '_' + noPeserta + '_' + kodeMapel;
 }
 
-/**
- * Simpan sesi ujian aktif ke localStorage.
- * Dipanggil setiap kali jawaban berubah.
- */
+/* ─────────────────────────────────────────────────
+   FIX: saveSession menyimpan soalList LENGKAP
+   termasuk field kunci — tidak dihapus lagi.
+   kunciJawabanMap (memory) juga selalu dibangun
+   ulang dari soalList saat restore.
+   ───────────────────────────────────────────────── */
 function saveSession() {
   if (!siswaAktif || soalList.length === 0) return;
-  const kode   = document.getElementById('kode-mapel').value.trim();
-  const no     = siswaAktif['no peserta'] || '';
-  const sk     = sessionKey(no, kode, _selectedLab);
-
-  // Simpan soalList TANPA field kunci agar tidak bocor ke siswa
-  const soalSafe = soalList.map(s => {
-    const copy = { ...s };
-    delete copy.kunci;
-    delete copy.Kunci;
-    return copy;
-  });
+  const kode = document.getElementById('kode-mapel').value.trim();
+  const no   = siswaAktif['no peserta'] || '';
+  const sk   = sessionKey(no, kode, _selectedLab);
 
   cacheSet(sk, {
     jawaban,
     currentIdx,
-    soalList    : soalSafe,
+    soalList,          // ← SIMPAN LENGKAP termasuk field kunci
     siswaAktif,
-    kodeMapel   : kode,
+    kodeMapel    : kode,
     mataPelajaran: document.getElementById('txt-mapel-badge').textContent,
-    labKey      : _selectedLab,
-    savedAt     : new Date().toLocaleTimeString('id-ID'),
+    labKey       : _selectedLab,
+    savedAt      : new Date().toLocaleTimeString('id-ID'),
   }, CACHE_TTL.session);
 
   showAutosaveBadge();
 }
 
-/**
- * Muat sesi yang tersimpan. Kembalikan data atau null.
- */
 function loadSession(noPeserta, kodeMapel, labKey) {
   return cacheGet(sessionKey(noPeserta, kodeMapel, labKey));
 }
 
-/**
- * Hapus sesi setelah jawaban berhasil dikirim.
- */
 function clearSession() {
   if (!siswaAktif) return;
   const kode = document.getElementById('kode-mapel').value.trim();
@@ -1165,7 +1149,6 @@ function clearSession() {
   cacheRemove(sessionKey(no, kode, _selectedLab));
 }
 
-/* ── Auto-save badge ─────────────────────────────── */
 let _autosaveTimer = null;
 function showAutosaveBadge() {
   const badge = document.getElementById('autosave-badge');
@@ -1174,7 +1157,6 @@ function showAutosaveBadge() {
   _autosaveTimer = setTimeout(() => badge.classList.remove('show'), 2000);
 }
 
-/* ── Chip "Sesi tersimpan" di exam header ─────────── */
 function showSessionChip(show) {
   const chip = document.getElementById('session-saved-chip');
   if (chip) chip.style.display = show ? 'inline-flex' : 'none';
@@ -1187,7 +1169,6 @@ function updateOfflineBanner() {
   const banner = document.getElementById('offline-banner');
   if (!navigator.onLine) {
     banner.classList.add('show');
-    // Geser konten app ke bawah agar tidak tertutup banner
     document.getElementById('app').style.paddingTop = '52px';
   } else {
     banner.classList.remove('show');
@@ -1201,7 +1182,6 @@ window.addEventListener('online', () => {
 });
 window.addEventListener('offline', () => {
   updateOfflineBanner();
-  // Langsung simpan ulang sesi saat offline agar paling fresh
   saveSession();
   toast('warn', 'Koneksi Terputus', 'Jawaban tersimpan otomatis — tidak akan hilang.');
 });
@@ -1289,7 +1269,7 @@ function setActiveLab(key) {
   firebaseConfig = cfg.firebase;
 }
 
-/* ─── Firebase lazy init ────────────────────────── */
+/* ─── Firebase lazy init ─────────────────────────── */
 let _db       = null;
 let _dbLabKey = null;
 
@@ -1331,6 +1311,27 @@ let readingDone     = false;
 let timerSisaDetik  = 15;
 let timerCekPeserta = null;
 let _labLoading     = false;
+
+/* ══════════════════════════════════════════════════
+   FIX UTAMA: kunciJawabanMap — disimpan di MEMORY
+   (tidak masuk localStorage), selalu dibangun dari
+   soalList baik saat login baru maupun restore sesi.
+   Ini memastikan Firebase selalu mendapat kunci yang
+   benar tanpa bergantung pada GAS saat submit.
+   ══════════════════════════════════════════════════ */
+let kunciJawabanMap = {};   // { 0: 'A', 1: 'C', ... }
+
+/**
+ * Bangun kunciJawabanMap dari soalList yang aktif.
+ * Dipanggil setelah soalList diisi (login baru atau restore).
+ */
+function buildKunciMap() {
+  kunciJawabanMap = {};
+  soalList.forEach((s, i) => {
+    const k = String(s.kunci || s.Kunci || '').trim().toUpperCase();
+    if (k) kunciJawabanMap[i] = k;
+  });
+}
 
 /* ─── gasGet dengan timeout 15 detik ─────────────── */
 async function gasGet(action, params = {}) {
@@ -1440,7 +1441,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') mulaiUjian();
   });
 
-  // Simpan sesi sebelum tab/window ditutup
   window.addEventListener('beforeunload', () => {
     if (soalList.length > 0 && siswaAktif) saveSession();
   });
@@ -1453,7 +1453,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-/* ─── Badge cache di tombol lab ────────────────────── */
+/* ─── Badge cache di tombol lab ─────────────────── */
 function updateLabCacheBadges() {
   Object.keys(LAB_CONFIGS).forEach(key => {
     const cached = cacheGet('cover_' + key);
@@ -1498,7 +1498,7 @@ function clearAllCache() {
   });
 }
 
-/* ─── Pilih Lab ───────────────────────────────────── */
+/* ─── Pilih Lab ──────────────────────────────────── */
 async function pilihLab(key) {
   if (_labLoading) return;
   _labLoading = true;
@@ -1707,7 +1707,7 @@ async function cekKodeMapel() {
 }
 
 /* ══════════════════════════════════════════════════
-   MULAI UJIAN — cek sesi tersimpan terlebih dahulu
+   MULAI UJIAN — cek sesi tersimpan
    ══════════════════════════════════════════════════ */
 async function mulaiUjian() {
   if (modeManual) {
@@ -1731,12 +1731,11 @@ async function mulaiUjian() {
   const password = document.getElementById('pass-mulai').value;
   if (!password) return toast('warn', 'Password Kosong', 'Masukkan password mulai dari pengawas.');
 
-  // ── Cek apakah ada sesi tersimpan ──────────────────
   const no        = siswaAktif['no peserta'] || '';
   const savedSesi = loadSession(no, kode, _selectedLab);
   if (savedSesi && savedSesi.soalList && savedSesi.soalList.length > 0) {
-    const answered  = Object.keys(savedSesi.jawaban || {}).length;
-    const total     = savedSesi.soalList.length;
+    const answered = Object.keys(savedSesi.jawaban || {}).length;
+    const total    = savedSesi.soalList.length;
     showModal({
       icon   : '🔄',
       iconBg : '#dcfce7',
@@ -1747,28 +1746,30 @@ async function mulaiUjian() {
         '<small style="color:var(--muted)">Disimpan pukul ' + (savedSesi.savedAt || '—') + '</small><br><br>' +
         'Lanjutkan dari sesi sebelumnya?',
       buttons: [
-        { label: '🆕 Mulai Baru',    cls: 'ghost',   action: () => prosesLogin(kode, password, false) },
-        { label: '▶ Lanjutkan',      cls: 'success',  action: () => restoreSession(savedSesi) },
+        { label: '🆕 Mulai Baru', cls: 'ghost',   action: () => prosesLogin(kode, password) },
+        { label: '▶ Lanjutkan',   cls: 'success',  action: () => restoreSession(savedSesi)  },
       ],
     });
     return;
   }
 
-  // Tidak ada sesi — langsung proses login biasa
-  prosesLogin(kode, password, false);
+  prosesLogin(kode, password);
 }
 
-/**
- * Pulihkan sesi dari cache tanpa memuat ulang soal dari server.
- * Kunci jawaban akan di-fetch ulang saat submit.
- */
+/* ══════════════════════════════════════════════════
+   FIX: restoreSession — bangun kunciJawabanMap
+   dari soalList yang tersimpan (sekarang lengkap)
+   ══════════════════════════════════════════════════ */
 function restoreSession(sesi) {
   soalList        = sesi.soalList;
   jawaban         = sesi.jawaban || {};
   currentIdx      = Math.min(sesi.currentIdx || 0, soalList.length - 1);
   siswaAktif      = sesi.siswaAktif || siswaAktif;
   submitCardShown = false;
-  passwordSelesai = '';   // akan diminta ulang saat submit
+  passwordSelesai = '';
+
+  // ── FIX: Bangun kunciJawabanMap dari soalList cache ──
+  buildKunciMap();
 
   document.getElementById('txt-nama-siswa').textContent = siswaAktif['nama'] || '';
   document.getElementById('txt-info-siswa').textContent =
@@ -1788,11 +1789,10 @@ function restoreSession(sesi) {
     Object.keys(jawaban).length + ' jawaban berhasil dipulihkan.');
 }
 
-/**
- * Proses login normal — fetch soal dari server.
- * force=false: normal. force=true: abaikan sesi lama (mulai baru).
- */
-async function prosesLogin(kode, password, _force) {
+/* ══════════════════════════════════════════════════
+   prosesLogin — fetch soal & bangun kunciJawabanMap
+   ══════════════════════════════════════════════════ */
+async function prosesLogin(kode, password) {
   const btn = document.getElementById('btn-mulai');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Memuat soal...';
@@ -1818,6 +1818,9 @@ async function prosesLogin(kode, password, _force) {
       btn.innerHTML = 'Masuk ke Ruang Ujian';
       return;
     }
+
+    // ── FIX: Bangun kunciJawabanMap setelah soal dimuat ──
+    buildKunciMap();
 
     document.getElementById('txt-nama-siswa').textContent = siswaAktif['nama'] || '';
     document.getElementById('txt-info-siswa').textContent =
@@ -2042,8 +2045,6 @@ function pilihJawaban(val) {
   if (!readingDone) return;
   jawaban[currentIdx] = val;
   updatePalette();
-
-  // ─── AUTO-SAVE setiap jawaban ───────────────────
   saveSession();
 
   setTimeout(() => {
@@ -2132,7 +2133,6 @@ function closePaletteOnOverlay(e) {
 /* ─── Navigasi ───────────────────────────────────── */
 function goTo(idx) {
   if (idx < 0 || idx >= soalList.length) return;
-  // Simpan currentIdx sebelum pindah agar sesi menyimpan posisi terbaru
   saveSession();
   renderQuestion(idx);
 }
@@ -2145,9 +2145,14 @@ function goToNext() {
   else toast('info', 'Soal Terakhir', 'Kamu sudah di soal terakhir.');
 }
 
-/* ─── Submit ─────────────────────────────────────── */
+/* ══════════════════════════════════════════════════
+   SUBMIT — FIX: pakai kunciJawabanMap (memory)
+   sehingga kunci selalu tersedia baik login baru
+   maupun restore sesi. Firebase & GAS keduanya
+   mendapat kunci yang benar.
+   ══════════════════════════════════════════════════ */
 function validasiKirim() {
-  const passInput  = document.getElementById('pass-selesai').value;
+  const passInput = document.getElementById('pass-selesai').value;
   if (!passInput) return toast('warn', 'Password Kosong', 'Masukkan password selesai dari pengawas.');
   const unanswered = soalList.length - Object.keys(jawaban).length;
   const msg = unanswered > 0
@@ -2174,26 +2179,34 @@ async function kirimJawaban() {
   const kode          = document.getElementById('kode-mapel').value.trim();
   const mataPelajaran = document.getElementById('txt-mapel-badge').textContent;
 
+  // ── Map jawaban siswa (nomor soal berbasis 1) ──
   const jawabanMap = {};
   soalList.forEach((_, i) => { jawabanMap[String(i + 1)] = jawaban[i] || ''; });
 
-  let nilai  = 0;
-  let benar  = 0;
+  // ══════════════════════════════════════════════
+  // FIX UTAMA: Hitung nilai pakai kunciJawabanMap
+  // (memory), bukan s.kunci dari soalList.
+  // Ini benar baik untuk login baru maupun restore
+  // sesi karena buildKunciMap() selalu dipanggil.
+  // ══════════════════════════════════════════════
+  let benar = 0;
   const kunciMap      = {};
   const detailJawaban = {};
-  soalList.forEach((s, i) => {
+
+  soalList.forEach((_, i) => {
     const noSoal  = String(i + 1);
-    const kunci   = String(s.kunci || '').trim().toUpperCase();
+    const kunci   = kunciJawabanMap[i] || '';          // ← FIX: dari memory map
     const pilihan = (jawaban[i] || '').toUpperCase();
     const isBenar = kunci !== '' && pilihan === kunci;
     kunciMap[noSoal]      = kunci;
     detailJawaban[noSoal] = { jawaban: pilihan, kunci, benar: isBenar };
     if (isBenar) benar++;
   });
-  const total = soalList.length;
-  nilai = total > 0 ? Math.round((benar / total) * 100) : 0;
 
+  const total          = soalList.length;
+  let   nilai          = total > 0 ? Math.round((benar / total) * 100) : 0;
   const waktuSubmitISO = new Date().toISOString();
+
   const dataKirim = {
     noPeserta      : siswaAktif['no peserta'] || '',
     nama           : siswaAktif['nama']        || '',
@@ -2214,6 +2227,7 @@ async function kirimJawaban() {
   let berhasilFirebase    = false;
   let berhasilSpreadsheet = false;
 
+  // ── Firebase RTDB ──────────────────────────────
   const fbPromise = (async () => {
     try {
       const fb = await getDB();
@@ -2221,18 +2235,21 @@ async function kirimJawaban() {
       const path   = 'hasil/' + dataKirim.kodeMapel + '/' + dataKirim.noPeserta;
       const docRef = fb.ref(fb.db, path);
       await fb.set(docRef, {
-        nama         : dataKirim.nama,
-        kelas        : dataKirim.kelas,
-        sekolah      : dataKirim.sekolah       || '',
-        mataPelajaran: dataKirim.mataPelajaran,
-        kodeMapel    : dataKirim.kodeMapel,
-        noPeserta    : dataKirim.noPeserta,
-        ruang        : '',
-        jawabanSiswa : JSON.stringify(jawabanMap),
-        kunciJawaban : JSON.stringify(kunciMap),
+        nama          : dataKirim.nama,
+        kelas         : dataKirim.kelas,
+        sekolah       : dataKirim.sekolah        || '',
+        mataPelajaran : dataKirim.mataPelajaran,
+        kodeMapel     : dataKirim.kodeMapel,
+        noPeserta     : dataKirim.noPeserta,
+        ruang         : _selectedLab              || '',
+        jawabanSiswa  : JSON.stringify(jawabanMap),
+        kunciJawaban  : JSON.stringify(kunciMap),   // ← kunci benar dari kunciJawabanMap
+        detailJawaban : JSON.stringify(detailJawaban),
         nilai,
-        waktuSubmit  : waktuSubmitISO,
-        ts           : Date.now(),
+        benar,
+        total,
+        waktuSubmit   : waktuSubmitISO,
+        ts            : Date.now(),
       });
       berhasilFirebase = true;
     } catch (err) {
@@ -2240,6 +2257,7 @@ async function kirimJawaban() {
     }
   })();
 
+  // ── GAS Spreadsheet (backup) ───────────────────
   const gasPromise = (async () => {
     try {
       const payload = {
@@ -2262,6 +2280,7 @@ async function kirimJawaban() {
 
   await Promise.allSettled([fbPromise, gasPromise]);
 
+  // ── Fallback GET jika keduanya gagal ───────────
   if (!berhasilFirebase && !berhasilSpreadsheet) {
     try {
       btn.innerHTML = '<div class="spinner"></div> Mencoba jalur darurat...';
@@ -2289,7 +2308,7 @@ async function kirimJawaban() {
     }
   }
 
-  // ─── Hapus sesi setelah berhasil kirim ───────────
+  // ── Hapus sesi setelah berhasil ────────────────
   clearSession();
 
   const statusLines = [
