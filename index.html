@@ -41,6 +41,56 @@ body {
 }
 .hidden { display: none !important; }
 
+/* ═══════════════════════════════════════ OFFLINE BANNER */
+#offline-banner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 99997;
+  background: linear-gradient(135deg, #991b1b, #dc2626);
+  color: #fff; font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 10px 20px; transform: translateY(-100%);
+  transition: transform 0.35s cubic-bezier(0.34,1.2,0.64,1);
+  box-shadow: 0 4px 20px rgba(220,38,38,0.4);
+  letter-spacing: 0.01em;
+}
+#offline-banner.show { transform: translateY(0); }
+#offline-banner .ob-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #fca5a5; animation: obPulse 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes obPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+#offline-banner .ob-save-note {
+  font-size: 11px; font-weight: 600; opacity: .85;
+  background: rgba(255,255,255,.15); border-radius: 99px;
+  padding: 3px 10px; margin-left: 4px;
+}
+
+/* ═══════════════════════════════════════ AUTO-SAVE BADGE */
+#autosave-badge {
+  position: fixed; bottom: 24px; right: 20px; z-index: 9995;
+  background: var(--success); color: #fff;
+  font-size: 12px; font-weight: 700; border-radius: 99px;
+  padding: 8px 16px; display: flex; align-items: center; gap: 7px;
+  box-shadow: 0 4px 16px rgba(22,163,74,.4);
+  opacity: 0; transform: translateY(12px) scale(.95);
+  transition: opacity .25s ease, transform .25s ease;
+  pointer-events: none;
+}
+#autosave-badge.show {
+  opacity: 1; transform: translateY(0) scale(1);
+}
+#autosave-badge .as-icon { font-size: 14px; }
+
+/* ═══════════════════════════════════════ SESSION RESTORE CHIP (di exam header) */
+.session-restore-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(22,163,74,0.2); border: 1px solid rgba(22,163,74,0.5);
+  color: #4ade80; font-size: 11px; font-weight: 700;
+  padding: 4px 12px; border-radius: 99px; letter-spacing: .03em;
+  animation: chipFadeIn .4s ease;
+}
+@keyframes chipFadeIn { from{opacity:0;transform:scale(.9)} to{opacity:1;transform:none} }
+
 /* ═══════════════════════════════════════ LAB SELECTOR */
 .lab-btn {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -678,10 +728,24 @@ sub { bottom: -0.25em; color: inherit; }
   .q-text { font-size: 15px; }
   .cover-banner { padding: 36px 20px 28px; }
   .cover-body { padding: 24px 20px; }
+  #offline-banner { font-size: 12px; padding: 9px 14px; }
 }
 </style>
 </head>
 <body>
+
+<!-- ════════════════════════════ OFFLINE BANNER -->
+<div id="offline-banner">
+  <div class="ob-dot"></div>
+  <span>Koneksi terputus — jawaban Anda tetap aman tersimpan</span>
+  <span class="ob-save-note">💾 Tersimpan lokal</span>
+</div>
+
+<!-- ════════════════════════════ AUTO-SAVE BADGE -->
+<div id="autosave-badge">
+  <span class="as-icon">💾</span>
+  <span>Jawaban tersimpan</span>
+</div>
 
 <!-- ════════════════════════════ SPLASH -->
 <div id="splash">
@@ -901,7 +965,10 @@ sub { bottom: -0.25em; color: inherit; }
         <h2 id="txt-nama-siswa"></h2>
         <p  id="txt-info-siswa"></p>
       </div>
-      <span class="mapel-badge" id="txt-mapel-badge"></span>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span id="session-saved-chip" style="display:none" class="session-restore-chip">💾 Sesi tersimpan</span>
+        <span class="mapel-badge" id="txt-mapel-badge"></span>
+      </div>
     </div>
     <div class="timer-bar" id="timer-bar">
       <span class="timer-icon" id="timer-icon">⏳</span>
@@ -972,28 +1039,17 @@ sub { bottom: -0.25em; color: inherit; }
 </div>
 
 <script type="module">
-/* ═══════════════════════════════════════════════════
-   BUG FIXES SUMMARY:
-   [FIX-1] currentIdx scope — renderNav() pakai event listener, bukan onclick string
-   [FIX-2] readingDone race condition — timer baru selalu reset + guard optList dalam interval
-   [FIX-3] double-lab race — flag _labLoading mencegah klik ganda
-   [FIX-4] gasGet timeout — AbortController 15 detik
-   [FIX-5] escHtml/parseMath order — parseMath dipanggil dulu, escaping hanya untuk teks mentah
-   [FIX-6] inline onclick diganti addEventListener semua
-   [FIX-7] imgMemCache size limit — max 60 entry, evict entry terlama
-   [FIX-8] Firebase deleteApp race — cek app existence dengan nama eksplisit
-   [FIX-9] window.currentIdx dihapus (tidak berguna, menyesatkan)
-   ═══════════════════════════════════════════════════ */
 
 /* ══════════════════════════════════════════════════
    CACHE SYSTEM
    ══════════════════════════════════════════════════ */
 const CACHE_VERSION = 'v1';
 const CACHE_TTL = {
-  cover : 24 * 60 * 60 * 1000,
-  logo  : 7  * 24 * 60 * 60 * 1000,
-  mapel : 15 * 60 * 1000,
-  image : 3  * 24 * 60 * 60 * 1000,
+  cover  : 24 * 60 * 60 * 1000,
+  logo   : 7  * 24 * 60 * 60 * 1000,
+  mapel  : 15 * 60 * 1000,
+  image  : 3  * 24 * 60 * 60 * 1000,
+  session: 24 * 60 * 60 * 1000,   // ← TTL sesi jawaban: 24 jam
 };
 
 function cacheSet(key, data, ttl) {
@@ -1004,7 +1060,6 @@ function cacheSet(key, data, ttl) {
     if (e.name === 'QuotaExceededError') pruneOldImages();
   }
 }
-
 function cacheGet(key) {
   try {
     const raw = localStorage.getItem('exam_cache_' + key);
@@ -1015,7 +1070,9 @@ function cacheGet(key) {
     return record.data;
   } catch (_) { return null; }
 }
-
+function cacheRemove(key) {
+  localStorage.removeItem('exam_cache_' + key);
+}
 function pruneOldImages() {
   const keys = [];
   for (let i = 0; i < localStorage.length; i++) {
@@ -1028,7 +1085,6 @@ function pruneOldImages() {
   });
   keys.slice(0, Math.ceil(keys.length / 2)).forEach(k => localStorage.removeItem(k));
 }
-
 function clearAllCacheInternal() {
   const toRemove = [];
   for (let i = 0; i < localStorage.length; i++) {
@@ -1037,7 +1093,6 @@ function clearAllCacheInternal() {
   }
   toRemove.forEach(k => localStorage.removeItem(k));
 }
-
 function getCacheStats() {
   let count = 0, bytes = 0;
   for (let i = 0; i < localStorage.length; i++) {
@@ -1049,6 +1104,107 @@ function getCacheStats() {
   }
   return { count, kb: Math.round(bytes / 1024) };
 }
+
+/* ══════════════════════════════════════════════════
+   SESSION PERSISTENCE — simpan & pulihkan jawaban
+   ══════════════════════════════════════════════════ */
+
+/**
+ * Buat key sesi unik per peserta + mapel + lab
+ */
+function sessionKey(noPeserta, kodeMapel, labKey) {
+  return 'session_' + labKey + '_' + noPeserta + '_' + kodeMapel;
+}
+
+/**
+ * Simpan sesi ujian aktif ke localStorage.
+ * Dipanggil setiap kali jawaban berubah.
+ */
+function saveSession() {
+  if (!siswaAktif || soalList.length === 0) return;
+  const kode   = document.getElementById('kode-mapel').value.trim();
+  const no     = siswaAktif['no peserta'] || '';
+  const sk     = sessionKey(no, kode, _selectedLab);
+
+  // Simpan soalList TANPA field kunci agar tidak bocor ke siswa
+  const soalSafe = soalList.map(s => {
+    const copy = { ...s };
+    delete copy.kunci;
+    delete copy.Kunci;
+    return copy;
+  });
+
+  cacheSet(sk, {
+    jawaban,
+    currentIdx,
+    soalList    : soalSafe,
+    siswaAktif,
+    kodeMapel   : kode,
+    mataPelajaran: document.getElementById('txt-mapel-badge').textContent,
+    labKey      : _selectedLab,
+    savedAt     : new Date().toLocaleTimeString('id-ID'),
+  }, CACHE_TTL.session);
+
+  showAutosaveBadge();
+}
+
+/**
+ * Muat sesi yang tersimpan. Kembalikan data atau null.
+ */
+function loadSession(noPeserta, kodeMapel, labKey) {
+  return cacheGet(sessionKey(noPeserta, kodeMapel, labKey));
+}
+
+/**
+ * Hapus sesi setelah jawaban berhasil dikirim.
+ */
+function clearSession() {
+  if (!siswaAktif) return;
+  const kode = document.getElementById('kode-mapel').value.trim();
+  const no   = siswaAktif['no peserta'] || '';
+  cacheRemove(sessionKey(no, kode, _selectedLab));
+}
+
+/* ── Auto-save badge ─────────────────────────────── */
+let _autosaveTimer = null;
+function showAutosaveBadge() {
+  const badge = document.getElementById('autosave-badge');
+  badge.classList.add('show');
+  clearTimeout(_autosaveTimer);
+  _autosaveTimer = setTimeout(() => badge.classList.remove('show'), 2000);
+}
+
+/* ── Chip "Sesi tersimpan" di exam header ─────────── */
+function showSessionChip(show) {
+  const chip = document.getElementById('session-saved-chip');
+  if (chip) chip.style.display = show ? 'inline-flex' : 'none';
+}
+
+/* ══════════════════════════════════════════════════
+   ONLINE / OFFLINE STATUS
+   ══════════════════════════════════════════════════ */
+function updateOfflineBanner() {
+  const banner = document.getElementById('offline-banner');
+  if (!navigator.onLine) {
+    banner.classList.add('show');
+    // Geser konten app ke bawah agar tidak tertutup banner
+    document.getElementById('app').style.paddingTop = '52px';
+  } else {
+    banner.classList.remove('show');
+    document.getElementById('app').style.paddingTop = '';
+  }
+}
+
+window.addEventListener('online', () => {
+  updateOfflineBanner();
+  toast('success', 'Koneksi Kembali', 'Jaringan sudah terhubung kembali. Jawaban Anda aman.');
+});
+window.addEventListener('offline', () => {
+  updateOfflineBanner();
+  // Langsung simpan ulang sesi saat offline agar paling fresh
+  saveSession();
+  toast('warn', 'Koneksi Terputus', 'Jawaban tersimpan otomatis — tidak akan hilang.');
+});
 
 /* ══════════════════════════════════════════════════
    KONFIGURASI MULTI-LAB
@@ -1121,39 +1277,34 @@ const LAB_CONFIGS = {
   }
 };
 
-let GAS_URL       = '';
+let GAS_URL        = '';
 let firebaseConfig = {};
-let _selectedLab  = null;
+let _selectedLab   = null;
 
 function setActiveLab(key) {
   const cfg = LAB_CONFIGS[key];
   if (!cfg) return;
-  _selectedLab  = key;
-  GAS_URL       = cfg.GAS_URL;
+  _selectedLab   = key;
+  GAS_URL        = cfg.GAS_URL;
   firebaseConfig = cfg.firebase;
 }
 
-/* ─── [FIX-8] Firebase lazy init — app name eksplisit, cegah "already exists" ── */
+/* ─── Firebase lazy init ────────────────────────── */
 let _db       = null;
 let _dbLabKey = null;
 
 async function getDB() {
   if (_db && _dbLabKey === _selectedLab) return _db;
   try {
-    const { initializeApp, getApps, getApp, deleteApp } = await import(
+    const { initializeApp, getApps, deleteApp } = await import(
       'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'
     );
     const { getDatabase, ref, set } = await import(
       'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js'
     );
-
-    // Hapus app dengan nama 'exam-app' jika sudah ada dari lab sebelumnya
     const APP_NAME = 'exam-app';
     const existing = getApps().find(a => a.name === APP_NAME);
-    if (existing) {
-      await deleteApp(existing);
-    }
-
+    if (existing) await deleteApp(existing);
     const app = initializeApp(firebaseConfig, APP_NAME);
     _db       = { db: getDatabase(app), ref, set };
     _dbLabKey = _selectedLab;
@@ -1172,16 +1323,16 @@ let modeManual      = false;
 let infoMapelData   = null;
 let soalList        = [];
 let jawaban         = {};
-let currentIdx      = 0;          // [FIX-9] tidak lagi di-expose ke window
+let currentIdx      = 0;
 let passwordSelesai = '';
 let submitCardShown = false;
 let timerInterval   = null;
 let readingDone     = false;
 let timerSisaDetik  = 15;
 let timerCekPeserta = null;
-let _labLoading     = false;      // [FIX-3] flag anti double-click
+let _labLoading     = false;
 
-/* ─── [FIX-4] gasGet dengan timeout 15 detik ─────── */
+/* ─── gasGet dengan timeout 15 detik ─────────────── */
 async function gasGet(action, params = {}) {
   const controller = new AbortController();
   const tid = setTimeout(() => controller.abort(), 15000);
@@ -1196,13 +1347,11 @@ async function gasGet(action, params = {}) {
 
 /* ─── Splash ─────────────────────────────────────── */
 let splashPct = 0;
-
 function setSplashProgress(pct, status) {
   splashPct = pct;
   document.getElementById('splash-progress').style.width = pct + '%';
   if (status) document.getElementById('splash-status').textContent = status;
 }
-
 function animateSplashTo(targetPct, duration, status, cb) {
   if (status) document.getElementById('splash-status').textContent = status;
   const start = splashPct;
@@ -1216,7 +1365,6 @@ function animateSplashTo(targetPct, duration, status, cb) {
   }
   requestAnimationFrame(step);
 }
-
 function dismissSplash() {
   const splash = document.getElementById('splash');
   const app    = document.getElementById('app');
@@ -1232,34 +1380,26 @@ function showRoomLoading(label, fromCache = false) {
   document.getElementById('room-loader-label').textContent = label || 'Ruangan';
   document.getElementById('room-loader-sub-text').textContent =
     fromCache ? 'Memuat dari cache lokal...' : 'Menghubungi server ujian...';
-
   const overlay = document.getElementById('room-loading-overlay');
   overlay.classList.remove('show');
   const oldBadge = overlay.querySelector('.cache-hit-pill');
   if (oldBadge) oldBadge.remove();
   void overlay.offsetWidth;
-
-  // Reset animasi bar
   const oldFill = document.getElementById('room-loader-bar-fill');
   const newFill = oldFill.cloneNode(true);
   oldFill.parentNode.replaceChild(newFill, oldFill);
-
-  // Reset animasi pintu
   const doorLeaf  = document.querySelector('.door-leaf');
   const doorClone = doorLeaf.cloneNode(true);
   doorLeaf.parentNode.replaceChild(doorClone, doorLeaf);
-
   if (fromCache) {
     const pill = document.createElement('div');
     pill.className   = 'cache-hit-pill';
     pill.textContent = '⚡ Data dari cache';
     overlay.appendChild(pill);
   }
-
   overlay.classList.add('show');
   document.body.style.overflow = 'hidden';
 }
-
 function hideRoomLoading() {
   const overlay = document.getElementById('room-loading-overlay');
   overlay.style.transition = 'opacity 0.4s ease';
@@ -1274,9 +1414,10 @@ function hideRoomLoading() {
   }, 400);
 }
 
-/* ─── Init — semua event listener dipasang di sini ── */
+/* ─── Init ───────────────────────────────────────── */
 window.addEventListener('DOMContentLoaded', () => {
-  // [FIX-6] Lab buttons — event listener, bukan onclick attr
+  updateOfflineBanner();
+
   document.querySelectorAll('.lab-btn[data-lab]').forEach(btn => {
     btn.addEventListener('click', () => pilihLab(btn.dataset.lab));
   });
@@ -1289,19 +1430,19 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('palette-handle-close').addEventListener('click', closePalette);
   document.getElementById('palette-overlay').addEventListener('click', closePaletteOnOverlay);
 
-  // [FIX-6] Kode mapel — event listener
   const kodeMapelEl = document.getElementById('kode-mapel');
   kodeMapelEl.addEventListener('input', () => {
     kodeMapelEl.value = kodeMapelEl.value.toUpperCase();
   });
   kodeMapelEl.addEventListener('blur', cekKodeMapel);
-
-  // [FIX-6] Nomor peserta — event listener
   document.getElementById('no-peserta').addEventListener('input', onNoPesertaInput);
-
-  // Enter pada pass-mulai
   document.getElementById('pass-mulai').addEventListener('keydown', e => {
     if (e.key === 'Enter') mulaiUjian();
+  });
+
+  // Simpan sesi sebelum tab/window ditutup
+  window.addEventListener('beforeunload', () => {
+    if (soalList.length > 0 && siswaAktif) saveSession();
   });
 
   animateSplashTo(100, 700, 'Siap!', () => {
@@ -1328,7 +1469,6 @@ function updateLabCacheBadges() {
     }
   });
 }
-
 function renderCachePanel() {
   const stats  = getCacheStats();
   const panel  = document.getElementById('cache-panel');
@@ -1340,7 +1480,6 @@ function renderCachePanel() {
     panel.style.display = 'none';
   }
 }
-
 function clearAllCache() {
   showModal({
     icon   : '🗑',
@@ -1359,9 +1498,9 @@ function clearAllCache() {
   });
 }
 
-/* ─── [FIX-3] Pilih Lab — flag mencegah double-trigger ── */
+/* ─── Pilih Lab ───────────────────────────────────── */
 async function pilihLab(key) {
-  if (_labLoading) return;                         // cegah klik ganda
+  if (_labLoading) return;
   _labLoading = true;
   setActiveLab(key);
   document.querySelectorAll('.lab-btn').forEach(b => { b.disabled = true; });
@@ -1372,7 +1511,6 @@ async function pilihLab(key) {
   const fromCache  = !!cachedData;
 
   showRoomLoading(labCfg.label, fromCache);
-
   const minDelay = new Promise(r => setTimeout(r, fromCache ? 2000 : 2800));
   let fetchResult = 'ok';
 
@@ -1404,16 +1542,16 @@ async function pilihLab(key) {
           } catch (_) {}
         }
         cacheSet(cacheKey, { coverData, logoDataUri }, CACHE_TTL.cover);
-      } catch (_) {
-        fetchResult = 'error';
-      }
+      } catch (_) { fetchResult = 'error'; }
     })();
     await Promise.all([minDelay, fetchPromise]);
   }
 
   await minDelay;
   hideRoomLoading();
-  _labLoading = false;                              // reset flag
+  _labLoading = false;
+
+  document.querySelectorAll('.lab-btn').forEach(b => { b.disabled = false; });
 
   if (fetchResult === 'error') {
     toast('warn', 'Koneksi Bermasalah', 'Periksa jaringan Anda.');
@@ -1478,7 +1616,6 @@ function renderCover() {
   }
   showPage('hal-cover');
 }
-
 function goHalPeserta() {
   showPage('hal-peserta');
   document.getElementById('no-peserta').focus();
@@ -1569,7 +1706,9 @@ async function cekKodeMapel() {
   }
 }
 
-/* ─── Mulai Ujian ────────────────────────────────── */
+/* ══════════════════════════════════════════════════
+   MULAI UJIAN — cek sesi tersimpan terlebih dahulu
+   ══════════════════════════════════════════════════ */
 async function mulaiUjian() {
   if (modeManual) {
     const nm = document.getElementById('manual-nama').value.trim();
@@ -1592,6 +1731,68 @@ async function mulaiUjian() {
   const password = document.getElementById('pass-mulai').value;
   if (!password) return toast('warn', 'Password Kosong', 'Masukkan password mulai dari pengawas.');
 
+  // ── Cek apakah ada sesi tersimpan ──────────────────
+  const no        = siswaAktif['no peserta'] || '';
+  const savedSesi = loadSession(no, kode, _selectedLab);
+  if (savedSesi && savedSesi.soalList && savedSesi.soalList.length > 0) {
+    const answered  = Object.keys(savedSesi.jawaban || {}).length;
+    const total     = savedSesi.soalList.length;
+    showModal({
+      icon   : '🔄',
+      iconBg : '#dcfce7',
+      title  : 'Sesi Ujian Ditemukan!',
+      sub    :
+        'Ada jawaban yang tersimpan untuk <strong>' + (savedSesi.siswaAktif?.nama || no) + '</strong>.<br>' +
+        '<strong>' + answered + ' dari ' + total + ' soal</strong> sudah dijawab.<br>' +
+        '<small style="color:var(--muted)">Disimpan pukul ' + (savedSesi.savedAt || '—') + '</small><br><br>' +
+        'Lanjutkan dari sesi sebelumnya?',
+      buttons: [
+        { label: '🆕 Mulai Baru',    cls: 'ghost',   action: () => prosesLogin(kode, password, false) },
+        { label: '▶ Lanjutkan',      cls: 'success',  action: () => restoreSession(savedSesi) },
+      ],
+    });
+    return;
+  }
+
+  // Tidak ada sesi — langsung proses login biasa
+  prosesLogin(kode, password, false);
+}
+
+/**
+ * Pulihkan sesi dari cache tanpa memuat ulang soal dari server.
+ * Kunci jawaban akan di-fetch ulang saat submit.
+ */
+function restoreSession(sesi) {
+  soalList        = sesi.soalList;
+  jawaban         = sesi.jawaban || {};
+  currentIdx      = Math.min(sesi.currentIdx || 0, soalList.length - 1);
+  siswaAktif      = sesi.siswaAktif || siswaAktif;
+  submitCardShown = false;
+  passwordSelesai = '';   // akan diminta ulang saat submit
+
+  document.getElementById('txt-nama-siswa').textContent = siswaAktif['nama'] || '';
+  document.getElementById('txt-info-siswa').textContent =
+    (siswaAktif['kelas'] || '') + (siswaAktif['sekolah'] ? ' · ' + siswaAktif['sekolah'] : '');
+  document.getElementById('txt-mapel-badge').textContent = sesi.mataPelajaran || sesi.kodeMapel || '';
+
+  const sc = document.getElementById('submit-card');
+  sc.classList.remove('show', 'animate-in');
+  document.getElementById('pass-selesai').value = '';
+
+  showSessionChip(true);
+  renderPalette();
+  showPage('hal-soal');
+  renderQuestion(currentIdx);
+  window.scrollTo(0, 0);
+  toast('success', '▶ Sesi Dilanjutkan',
+    Object.keys(jawaban).length + ' jawaban berhasil dipulihkan.');
+}
+
+/**
+ * Proses login normal — fetch soal dari server.
+ * force=false: normal. force=true: abaikan sesi lama (mulai baru).
+ */
+async function prosesLogin(kode, password, _force) {
   const btn = document.getElementById('btn-mulai');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Memuat soal...';
@@ -1604,6 +1805,7 @@ async function mulaiUjian() {
       btn.innerHTML = 'Masuk ke Ruang Ujian';
       return;
     }
+
     soalList        = acakSoal(res.soalList || []);
     passwordSelesai = res.passwordSelesai || '';
     jawaban         = {};
@@ -1626,6 +1828,7 @@ async function mulaiUjian() {
     sc.classList.remove('show', 'animate-in');
     document.getElementById('pass-selesai').value = '';
 
+    showSessionChip(false);
     renderPalette();
     showPage('hal-soal');
     renderQuestion(0);
@@ -1658,16 +1861,11 @@ function acakSoal(list) {
   return [...soal5, ...soal4, ...soal2, ...lainnya];
 }
 
-/* ─── [FIX-5] Text rendering — parseMath DULU, baru escape HTML ─────────────────
-   Pendekatan: rawToHtml memisahkan "safe text" vs "math markup"
-   ─────────────────────────────────────────────────────────────────────────────── */
+/* ─── Text rendering ─────────────────────────────── */
 function rawToHtml(s) {
-  // 1. parseMath bekerja pada teks mentah (sebelum di-escape)
   const mathed = parseMath(String(s || ''));
-  // 2. Bagian yang bukan tag HTML di-escape, tag hasil parseMath dibiarkan
-  //    Strategi: split di tag HTML, escape bagian di luar tag
   return mathed
-    .replace(/&(?!amp;|lt;|gt;|quot;|#)/g, '&amp;')  // escape & yang belum di-escape
+    .replace(/&(?!amp;|lt;|gt;|quot;|#)/g, '&amp;')
     .replace(/\n/g, '<br>');
 }
 
@@ -1719,7 +1917,6 @@ function renderQuestion(idx) {
       radio.id      = 'opt_' + huruf;
       radio.value   = huruf;
       radio.checked = (jawaban[idx] === huruf);
-      // [FIX-1] closure yang benar — huruf di-capture per iterasi
       radio.addEventListener('change', () => pilihJawaban(huruf));
 
       const lbl = document.createElement('label');
@@ -1751,26 +1948,25 @@ function renderQuestion(idx) {
     });
   }
 
-  renderNav();           // [FIX-1] renderNav pakai event listener
+  renderNav();
   updatePalette();
   mulaiTimer();
   loadImagesOnCard();
   window.scrollTo({ top: document.getElementById('hal-soal').offsetTop - 20, behavior: 'smooth' });
 }
 
-/* ─── [FIX-1 + FIX-2] renderNav — event listener, bukan onclick string ───────── */
+/* ─── renderNav ──────────────────────────────────── */
 function renderNav() {
   const navEl   = document.getElementById('nav-btns');
   const isFirst = currentIdx === 0;
   const isLast  = currentIdx === soalList.length - 1;
-
   navEl.innerHTML = '';
 
   const prevBtn = document.createElement('button');
   prevBtn.className   = 'btn-nav';
   prevBtn.textContent = '← Sebelumnya';
   prevBtn.disabled    = isFirst;
-  prevBtn.addEventListener('click', () => goTo(currentIdx - 1));   // closure aman
+  prevBtn.addEventListener('click', () => goTo(currentIdx - 1));
   navEl.appendChild(prevBtn);
 
   const skipBtn = document.createElement('button');
@@ -1788,20 +1984,17 @@ function renderNav() {
   navEl.appendChild(nextBtn);
 }
 
-/* ─── [FIX-2] Timer — readingDone direset eksplisit, guard optList dalam interval ── */
+/* ─── Timer ──────────────────────────────────────── */
 function mulaiTimer() {
   clearInterval(timerInterval);
   timerSisaDetik = 15;
-  readingDone    = false;          // reset eksplisit sebelum interval baru
+  readingDone    = false;
 
   const barEl   = document.getElementById('timer-bar');
   const fillEl  = document.getElementById('timer-bar-fill');
   const countEl = document.getElementById('timer-countdown');
   const labelEl = document.getElementById('timer-label');
   const iconEl  = document.getElementById('timer-icon');
-
-  // Snapshot ID soal saat ini — jika user navigasi sebelum timer selesai,
-  // interval soal lama tidak mempengaruhi soal baru
   const timerForIdx = currentIdx;
 
   barEl.className     = 'timer-bar reading';
@@ -1812,17 +2005,14 @@ function mulaiTimer() {
   countEl.className   = 'timer-countdown';
   fillEl.style.width  = '100%';
 
-  // Kunci opsi segera
   const optListEl = document.getElementById('option-list');
   if (optListEl) optListEl.classList.add('options-blocker');
 
   timerInterval = setInterval(() => {
-    // [FIX-2] Jika soal sudah ganti (navigasi cepat), hentikan interval ini
     if (currentIdx !== timerForIdx) {
       clearInterval(timerInterval);
       return;
     }
-
     timerSisaDetik--;
     fillEl.style.width  = ((timerSisaDetik / 15) * 100) + '%';
     countEl.textContent = timerSisaDetik;
@@ -1832,7 +2022,6 @@ function mulaiTimer() {
       clearInterval(timerInterval);
       readingDone = true;
 
-      // Ambil optList segar dari DOM (bukan closure lama)
       const freshOptList = document.getElementById('option-list');
       if (freshOptList) freshOptList.classList.remove('options-blocker');
 
@@ -1853,6 +2042,9 @@ function pilihJawaban(val) {
   if (!readingDone) return;
   jawaban[currentIdx] = val;
   updatePalette();
+
+  // ─── AUTO-SAVE setiap jawaban ───────────────────
+  saveSession();
 
   setTimeout(() => {
     const navEl = document.getElementById('nav-btns');
@@ -1881,7 +2073,6 @@ function renderPalette() {
   });
   updatePalette();
 }
-
 function updatePalette() {
   soalList.forEach((_, i) => {
     const el = document.getElementById('qn-' + i);
@@ -1900,7 +2091,6 @@ function updatePalette() {
   document.getElementById('pstat-unans').textContent         = (total - answered) + ' belum';
   cekTampilSubmit(answered, total);
 }
-
 function cekTampilSubmit(answered, total) {
   const card = document.getElementById('submit-card');
   if (answered >= total && total > 0) {
@@ -1921,7 +2111,6 @@ function cekTampilSubmit(answered, total) {
     }
   }
 }
-
 function togglePalette() {
   const ov = document.getElementById('palette-overlay');
   ov.classList.contains('show') ? closePalette() : openPalette();
@@ -1943,6 +2132,8 @@ function closePaletteOnOverlay(e) {
 /* ─── Navigasi ───────────────────────────────────── */
 function goTo(idx) {
   if (idx < 0 || idx >= soalList.length) return;
+  // Simpan currentIdx sebelum pindah agar sesi menyimpan posisi terbaru
+  saveSession();
   renderQuestion(idx);
 }
 function goToNext() {
@@ -2003,7 +2194,6 @@ async function kirimJawaban() {
   nilai = total > 0 ? Math.round((benar / total) * 100) : 0;
 
   const waktuSubmitISO = new Date().toISOString();
-
   const dataKirim = {
     noPeserta      : siswaAktif['no peserta'] || '',
     nama           : siswaAktif['nama']        || '',
@@ -2099,6 +2289,9 @@ async function kirimJawaban() {
     }
   }
 
+  // ─── Hapus sesi setelah berhasil kirim ───────────
+  clearSession();
+
   const statusLines = [
     berhasilFirebase
       ? '<small style="color:#16a34a">✓ Tersimpan di Firebase Realtime Database</small>'
@@ -2122,36 +2315,27 @@ async function kirimJawaban() {
   });
 }
 
-/* ─── [FIX-7] imgMemCache dengan batas 60 entry ──────
-   Entry terlama di-evict otomatis saat melebihi batas.
-   ─────────────────────────────────────────────────── */
-const IMG_MEM_MAX   = 60;
-const imgMemCache   = new Map();   // Map mempertahankan insertion order
-
+/* ─── Image cache ─────────────────────────────────── */
+const IMG_MEM_MAX = 60;
+const imgMemCache = new Map();
 function imgMemSet(key, val) {
-  if (imgMemCache.has(key)) imgMemCache.delete(key);  // refresh ke akhir
+  if (imgMemCache.has(key)) imgMemCache.delete(key);
   imgMemCache.set(key, val);
   if (imgMemCache.size > IMG_MEM_MAX) {
-    // Hapus entry pertama (terlama)
     imgMemCache.delete(imgMemCache.keys().next().value);
   }
 }
-
 function loadImagesOnCard() {
   const card = document.getElementById('q-card');
   card.querySelectorAll('img[data-src]').forEach(img => {
     const rawUrl = img.getAttribute('data-src');
     if (!rawUrl) return;
-
-    // Cek in-memory cache (Map)
     if (imgMemCache.has(rawUrl)) {
       img.src = imgMemCache.get(rawUrl);
       img.removeAttribute('data-src');
       img.style.minHeight = '';
       return;
     }
-
-    // Cek localStorage cache
     const imgCacheKey = 'img_' + rawUrl;
     const cachedImg   = cacheGet(imgCacheKey);
     if (cachedImg) {
@@ -2161,7 +2345,6 @@ function loadImagesOnCard() {
       imgMemSet(rawUrl, cachedImg);
       return;
     }
-
     if (/^https?:\/\//i.test(rawUrl)) {
       img.src = rawUrl;
       img.removeAttribute('data-src');
@@ -2180,14 +2363,12 @@ function loadImagesOnCard() {
     }
   });
 }
-
 async function fetchProxyImage(imgEl, cacheKey, fileId) {
   try {
     const res = await gasGet('proxyImage', { id: fileId });
     if (res.success) {
       imgMemSet(cacheKey, res.dataUri);
-      const imgCacheKey = 'img_' + cacheKey;
-      try { cacheSet(imgCacheKey, res.dataUri, CACHE_TTL.image); }
+      try { cacheSet('img_' + cacheKey, res.dataUri, CACHE_TTL.image); }
       catch (_) { pruneOldImages(); }
       imgEl.src = res.dataUri;
       imgEl.removeAttribute('data-src');
@@ -2195,7 +2376,6 @@ async function fetchProxyImage(imgEl, cacheKey, fileId) {
     }
   } catch (_) {}
 }
-
 function extractDriveId(url) {
   if (!url) return null;
   let m = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
@@ -2239,7 +2419,6 @@ function showModal(opts) {
   });
   document.getElementById('modal-overlay').classList.add('show');
 }
-
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('show');
 }
@@ -2251,10 +2430,7 @@ function showPage(id) {
   });
 }
 
-/* ─── [FIX-5] parseMath — bekerja pada teks MENTAH sebelum HTML-escape ──────────
-   Catatan: fungsi ini menghasilkan HTML tag (<sup>, <sub>, dll).
-   rawToHtml() memastikan parseMath dipanggil SEBELUM teks di-escape.
-   ─────────────────────────────────────────────────────────────────────────────── */
+/* ─── parseMath ──────────────────────────────────── */
 function parseMath(s) {
   if (!s) return s;
   const greek = {
@@ -2269,8 +2445,6 @@ function parseMath(s) {
     m => greek[m] || m
   );
   s = s.replace(/\binf(inity)?\b/gi, '∞');
-  // [FIX-5] Operator comparison: harus diproses SEBELUM teks di-escape
-  // (teks mentah masih punya <= bukan &lt;=)
   s = s.replace(/<=/g, '≤').replace(/>=/g, '≥').replace(/!=/g, '≠').replace(/\+-/g, '±');
   s = s.replace(/([a-zA-Z0-9\u03B1-\u03C9\u0391-\u03A9%\)]+)\^\(([^)]+)\)/g, (_, b, e) => b + '<sup>' + e + '</sup>');
   s = s.replace(/([a-zA-Z0-9\u03B1-\u03C9\u0391-\u03A9%\)]+)\^([a-zA-Z0-9\+\-\.]+)/g,   (_, b, e) => b + '<sup>' + e + '</sup>');
